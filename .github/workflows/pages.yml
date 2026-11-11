@@ -1,0 +1,68 @@
+name: Build and deploy
+
+# Builds Aerospace Client from the sources in this repository and publishes
+# the result to GitHub Pages.
+#
+# One-time setup: Settings -> Pages -> Build and deployment -> Source: "GitHub Actions".
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      # The stock Eaglercraft build is ~76 MB and pinned by SHA-256, so it only
+      # needs downloading again when tools/lib/upstream.js changes.
+      - name: Cache upstream build
+        uses: actions/cache@v6
+        with:
+          path: .cache/eaglercraft-26.3.html
+          key: upstream-${{ hashFiles('tools/lib/upstream.js') }}
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: node tools/build.js --out _site/index.html
+        env:
+          # Optional repository variable: another URL for the same pinned file.
+          AEROSPACE_UPSTREAM_URL: ${{ vars.AEROSPACE_UPSTREAM_URL }}
+
+      - name: Upload Pages artifact
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+  deploy:
+    name: Deploy to GitHub Pages
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

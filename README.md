@@ -8,7 +8,15 @@ Aerospace Client takes the stock single-file Eaglercraft 26.3 build and turns it
 
 Open [`docs/index.html`](docs/index.html) in a recent Chrome, Edge or Firefox. It is one self-contained file (about 80 MB) and works offline once downloaded.
 
-To host it, enable GitHub Pages for this repository with the source set to the `/docs` folder.
+### Host it on GitHub Pages
+
+The repository builds and publishes itself. One-time setup: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+
+After that, every push to `main` runs [`.github/workflows/pages.yml`](.github/workflows/pages.yml), which tests, builds `index.html` from the sources and deploys it to your Pages site. You can also start it by hand from the **Actions** tab ("Build and deploy" → "Run workflow"). Pull requests run the same test and build without deploying.
+
+The workflow downloads the pinned upstream build and checks its SHA-256. If that download ever stops working, set a repository variable named `AEROSPACE_UPSTREAM_URL` (Settings → Secrets and variables → Actions → Variables) to another copy of the same file.
+
+`docs/index.html` is a committed copy of the build for offline use. Pages no longer serves it once the source is set to GitHub Actions, and it is not rebuilt automatically, so run `npm run build` before committing if you want it to match your changes.
 
 | Control | Action |
 | --- | --- |

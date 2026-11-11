@@ -32,15 +32,18 @@ function sha256(file) {
 async function download(dest, log) {
   fs.mkdirSync(path.dirname(dest), { recursive: true });
   const tmp = dest + ".part";
+  // AEROSPACE_UPSTREAM_URL can point at another copy of the same file (a mirror
+  // or your own storage). The SHA-256 check below still applies to it.
+  const url = process.env.AEROSPACE_UPSTREAM_URL || UPSTREAM.url;
   log("downloading upstream Eaglercraft 26.3 (" + (UPSTREAM.bytes / 1048576).toFixed(0) + " MB)…");
   try {
-    const res = await fetch(UPSTREAM.url);
+    const res = await fetch(url);
     if (!res.ok) throw new Error("HTTP " + res.status);
     fs.writeFileSync(tmp, Buffer.from(await res.arrayBuffer()));
   } catch (e) {
     // fetch() ignores proxy settings on some Node versions; curl honours them
     log("fetch failed (" + e.message + "), retrying with curl…");
-    execFileSync("curl", ["-fL", "--retry", "3", "-o", tmp, UPSTREAM.url], { stdio: "inherit" });
+    execFileSync("curl", ["-fsSL", "--retry", "3", "-o", tmp, url], { stdio: "inherit" });
   }
   fs.renameSync(tmp, dest);
 }
