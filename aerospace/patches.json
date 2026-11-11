@@ -1,0 +1,17 @@
+{
+  "merge": {
+    "pack.mcmeta": {
+      "pack": {
+        "description": "Aerospace Client"
+      }
+    }
+  },
+  "appendValues": {
+    "data/minecraft/tags/painting_variant/placeable.json": [
+      "minecraft:aerospace_nebula",
+      "minecraft:aerospace_ringed_giant",
+      "minecraft:aerospace_liftoff",
+      "minecraft:aerospace_blue_marble"
+    ]
+  }
+}

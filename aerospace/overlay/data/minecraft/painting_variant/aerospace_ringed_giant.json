@@ -1,0 +1,13 @@
+{
+  "asset_id": "minecraft:aerospace_ringed_giant",
+  "author": {
+    "color": "gray",
+    "translate": "painting.minecraft.aerospace_ringed_giant.author"
+  },
+  "height": 2,
+  "title": {
+    "color": "yellow",
+    "translate": "painting.minecraft.aerospace_ringed_giant.title"
+  },
+  "width": 2
+}

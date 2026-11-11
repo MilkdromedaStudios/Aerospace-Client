@@ -1,0 +1,29 @@
+{
+  "parent": "minecraft:aerospace/root",
+  "criteria": {
+    "slow_falling": {
+      "conditions": {
+        "effects": {
+          "minecraft:slow_falling": {}
+        }
+      },
+      "trigger": "minecraft:effects_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.aerospace.moonwalker.description"
+    },
+    "icon": {
+      "id": "minecraft:feather"
+    },
+    "title": {
+      "translate": "advancements.aerospace.moonwalker.title"
+    }
+  },
+  "requirements": [
+    [
+      "slow_falling"
+    ]
+  ]
+}

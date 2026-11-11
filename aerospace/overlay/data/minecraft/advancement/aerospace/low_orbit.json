@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:aerospace/karman_line",
+  "criteria": {
+    "altitude": {
+      "conditions": {
+        "player": {
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "minecraft:location": {
+              "position": {
+                "y": {
+                  "min": 1000.0
+                }
+              }
+            }
+          }
+        }
+      },
+      "trigger": "minecraft:location"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.aerospace.low_orbit.description"
+    },
+    "icon": {
+      "id": "minecraft:nether_star"
+    },
+    "title": {
+      "translate": "advancements.aerospace.low_orbit.title"
+    },
+    "frame": "challenge"
+  },
+  "requirements": [
+    [
+      "altitude"
+    ]
+  ],
+  "rewards": {
+    "experience": 100
+  }
+}

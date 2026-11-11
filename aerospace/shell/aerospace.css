@@ -1,0 +1,371 @@
+/* Aerospace Client — shell styles (boot screen, HUD, command deck) */
+:root {
+	--aero-bg0: #04070f;
+	--aero-bg1: #090f24;
+	--aero-bg2: #0f1a3a;
+	--aero-line: rgba(63, 208, 255, .28);
+	--aero-accent: #3fd0ff;
+	--aero-accent-hi: #96ecff;
+	--aero-amber: #ffb84d;
+	--aero-text: #e8f4ff;
+	--aero-dim: #8ba3c7;
+	--aero-font: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+	--aero-ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* The upstream splash is replaced by #aero_boot; keep its node for the loader's bookkeeping. */
+#loading_screen { display: none !important; }
+
+/* ------------------------------------------------------------ boot screen */
+#aero_boot {
+	position: fixed;
+	inset: 0;
+	z-index: 2147483646;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+	background: radial-gradient(120% 90% at 50% 110%, #16245a 0%, var(--aero-bg1) 42%, var(--aero-bg0) 100%);
+	color: var(--aero-text);
+	font-family: var(--aero-ui);
+	user-select: none;
+	-webkit-user-select: none;
+	transition: opacity 520ms ease;
+}
+#aero_boot.is-leaving { opacity: 0; pointer-events: none; }
+#aero_boot_stars { position: absolute; inset: 0; width: 100%; height: 100%; }
+#aero_boot::after {	/* horizon glow */
+	content: "";
+	position: absolute;
+	left: -20%;
+	right: -20%;
+	bottom: -62vmin;
+	height: 80vmin;
+	border-radius: 50%;
+	background: radial-gradient(closest-side, rgba(63, 208, 255, .0) 93%, rgba(63, 208, 255, .55) 97.5%, rgba(63, 208, 255, 0) 100%),
+		radial-gradient(closest-side, #060b1c 96%, transparent 97%);
+	pointer-events: none;
+}
+.aero-boot-core {
+	position: relative;
+	z-index: 1;
+	width: min(560px, 86vw);
+	text-align: center;
+}
+.aero-boot-emblem {
+	width: clamp(84px, 22vmin, 168px);
+	height: auto;
+	filter: drop-shadow(0 0 26px rgba(63, 208, 255, .45));
+	animation: aero-float 6s ease-in-out infinite;
+}
+.aero-boot-word {
+	margin-top: 14px;
+	font: 800 clamp(28px, 7.4vmin, 58px)/1 var(--aero-ui);
+	letter-spacing: .26em;
+	text-indent: .26em;
+	background: linear-gradient(180deg, #ffffff 8%, var(--aero-accent) 58%, #3a6ee8 100%);
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+}
+.aero-boot-sub {
+	margin-top: 10px;
+	font: 600 clamp(11px, 2.1vmin, 14px)/1 var(--aero-font);
+	letter-spacing: .42em;
+	text-indent: .42em;
+	color: var(--aero-dim);
+}
+.aero-boot-bar {
+	position: relative;
+	height: 6px;
+	margin: 30px auto 0;
+	width: min(420px, 78vw);
+	border: 1px solid var(--aero-line);
+	border-radius: 4px;
+	background: rgba(4, 8, 20, .7);
+	overflow: hidden;
+}
+#aero_boot_fill {
+	position: absolute;
+	inset: 0 auto 0 0;
+	width: 0%;
+	background: linear-gradient(90deg, #2a6be0, var(--aero-accent) 70%, #fff);
+	box-shadow: 0 0 14px var(--aero-accent);
+	transition: width 380ms ease-out;
+}
+#aero_boot.is-holding #aero_boot_fill { animation: aero-pulse 1.1s ease-in-out infinite; }
+#aero_boot_status {
+	margin-top: 14px;
+	min-height: 1.4em;
+	font: 13px/1.4 var(--aero-font);
+	color: var(--aero-text);
+}
+#aero_boot_tip {
+	margin-top: 22px;
+	min-height: 2.8em;
+	font: 12px/1.4 var(--aero-ui);
+	color: var(--aero-dim);
+	transition: opacity 300ms ease;
+}
+@keyframes aero-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+@keyframes aero-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }
+
+/* Loader crash panel + "rotate your device" notice, restyled */
+._eaglercraftX_crash_element { background: var(--aero-bg0) !important; color: var(--aero-text) !important; }
+@media (orientation: portrait) and (pointer: coarse) {
+	#rotate_device { background: var(--aero-bg0) !important; font-family: var(--aero-ui) !important; }
+	#rotate_device .phone { border-color: var(--aero-accent) !important; }
+}
+
+/* -------------------------------------------------------------------- HUD */
+#game_frame { transform-origin: 50% 50%; }
+#game_frame.aero-zooming { transition: transform 150ms cubic-bezier(.2, .8, .2, 1); }
+
+#aero_hud {
+	position: fixed;
+	inset: 0;
+	z-index: 2147483000;
+	pointer-events: none;
+	font-family: var(--aero-font);
+	color: var(--aero-text);
+	overflow: hidden;
+}
+#aero_hud.is-hidden { display: none; }
+.aero-w {
+	position: absolute;
+	box-sizing: border-box;
+	padding: 5px 9px;
+	border: 1px solid var(--aero-line);
+	border-radius: 5px;
+	background: rgba(5, 9, 22, .58);
+	font-size: 13px;
+	line-height: 1.25;
+	white-space: nowrap;
+	text-shadow: 0 1px 0 rgba(0, 0, 0, .6);
+	transform-origin: 0 0;
+}
+.aero-w b { color: var(--aero-accent); font-weight: 700; }
+.aero-w small { color: var(--aero-dim); font-size: 10px; letter-spacing: .12em; margin-right: 6px; }
+.aero-w[hidden] { display: none; }
+#aero_hud.is-editing { pointer-events: auto; background: rgba(4, 7, 15, .45); }
+#aero_hud.is-editing .aero-w { cursor: grab; outline: 1px dashed var(--aero-accent); pointer-events: auto; }
+#aero_hud.is-editing .aero-w.is-dragging { cursor: grabbing; outline-style: solid; }
+#aero_edit_done {
+	position: absolute;
+	left: 50%;
+	top: 18px;
+	transform: translateX(-50%);
+	display: none;
+	pointer-events: auto;
+}
+#aero_hud.is-editing #aero_edit_done { display: block; }
+
+.aero-keys { display: grid; grid-template-columns: repeat(3, 30px); grid-template-rows: 30px 30px 30px 18px; gap: 3px; padding: 4px; }
+.aero-key {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid var(--aero-line);
+	border-radius: 4px;
+	background: rgba(5, 9, 22, .55);
+	font-size: 12px;
+	transition: background 60ms linear, color 60ms linear;
+}
+.aero-key.on { background: var(--aero-accent); color: #021018; border-color: #fff; text-shadow: none; }
+.aero-key.w { grid-area: 1 / 2; }
+.aero-key.a { grid-area: 2 / 1; }
+.aero-key.s { grid-area: 2 / 2; }
+.aero-key.d { grid-area: 2 / 3; }
+.aero-keys .aero-mouse { grid-area: 3 / 1 / 4 / 4; display: grid; grid-template-columns: 1fr 1fr; gap: 3px; }
+.aero-key.wide { grid-area: 4 / 1 / 5 / 4; font-size: 10px; }
+#aero_w_graph canvas { display: block; }
+#aero_w_brand { letter-spacing: .2em; font-size: 11px; color: var(--aero-accent-hi); }
+
+/* visor (cosmetic helmet frame) */
+#aero_visor {
+	position: fixed;
+	inset: 0;
+	z-index: 2147482990;
+	pointer-events: none;
+	display: none;
+	background:
+		radial-gradient(ellipse 78% 78% at 50% 50%, transparent 62%, rgba(2, 6, 16, .55) 88%, rgba(2, 6, 16, .92) 100%),
+		repeating-linear-gradient(180deg, rgba(150, 236, 255, .028) 0 1px, transparent 1px 3px);
+	box-shadow: inset 0 0 0 2px rgba(63, 208, 255, .12), inset 0 0 120px rgba(63, 208, 255, .10);
+}
+#aero_visor.on { display: block; }
+
+/* toasts */
+#aero_toasts {
+	position: fixed;
+	right: 14px;
+	bottom: 14px;
+	z-index: 2147483200;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	pointer-events: none;
+	font-family: var(--aero-ui);
+}
+.aero-toast {
+	padding: 10px 14px;
+	max-width: min(340px, 80vw);
+	border: 1px solid var(--aero-line);
+	border-left: 3px solid var(--aero-accent);
+	border-radius: 6px;
+	background: rgba(6, 11, 28, .92);
+	color: var(--aero-text);
+	font-size: 13px;
+	line-height: 1.35;
+	opacity: 0;
+	transform: translateY(8px);
+	transition: opacity 220ms ease, transform 220ms ease;
+}
+.aero-toast.on { opacity: 1; transform: none; }
+.aero-toast kbd, .aero-deck kbd {
+	padding: 1px 6px;
+	border: 1px solid var(--aero-line);
+	border-bottom-width: 2px;
+	border-radius: 4px;
+	background: rgba(63, 208, 255, .1);
+	font: 600 11px var(--aero-font);
+	color: var(--aero-accent-hi);
+}
+
+/* ----------------------------------------------------------- command deck */
+#aero_deck_backdrop {
+	position: fixed;
+	inset: 0;
+	z-index: 2147483100;
+	display: none;
+	align-items: center;
+	justify-content: center;
+	background: rgba(2, 5, 14, .66);
+	backdrop-filter: blur(5px);
+	-webkit-backdrop-filter: blur(5px);
+	font-family: var(--aero-ui);
+	color: var(--aero-text);
+}
+#aero_deck_backdrop.on { display: flex; }
+.aero-deck {
+	box-sizing: border-box;
+	width: min(860px, 94vw);
+	max-height: min(640px, 92vh);
+	display: flex;
+	flex-direction: column;
+	border: 1px solid var(--aero-line);
+	border-radius: 12px;
+	background: linear-gradient(180deg, rgba(15, 26, 58, .97), rgba(6, 10, 26, .98));
+	box-shadow: 0 30px 80px rgba(0, 0, 0, .6), 0 0 0 1px rgba(255, 255, 255, .03) inset, 0 0 60px rgba(63, 208, 255, .12);
+	overflow: hidden;
+}
+.aero-deck header {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 14px 18px;
+	border-bottom: 1px solid var(--aero-line);
+}
+.aero-deck header img { width: 34px; height: 34px; }
+.aero-deck header h1 { margin: 0; font: 800 16px/1.1 var(--aero-ui); letter-spacing: .22em; }
+.aero-deck header p { margin: 3px 0 0; font: 11px var(--aero-font); color: var(--aero-dim); letter-spacing: .1em; }
+.aero-deck header .aero-x { margin-left: auto; }
+.aero-tabs { display: flex; gap: 4px; padding: 10px 14px 0; border-bottom: 1px solid var(--aero-line); }
+.aero-tab {
+	padding: 8px 14px;
+	border: 1px solid transparent;
+	border-bottom: 0;
+	border-radius: 7px 7px 0 0;
+	background: none;
+	color: var(--aero-dim);
+	font: 600 12px var(--aero-ui);
+	letter-spacing: .12em;
+	text-transform: uppercase;
+	cursor: pointer;
+}
+.aero-tab:hover { color: var(--aero-text); }
+.aero-tab.on { color: var(--aero-accent-hi); border-color: var(--aero-line); background: rgba(63, 208, 255, .08); }
+.aero-pane { display: none; padding: 16px 18px 18px; overflow: auto; }
+.aero-pane.on { display: block; }
+.aero-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(232px, 1fr)); gap: 10px; }
+.aero-card {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	padding: 11px 12px;
+	border: 1px solid rgba(139, 163, 199, .2);
+	border-radius: 8px;
+	background: rgba(4, 8, 20, .5);
+	cursor: pointer;
+	text-align: left;
+	color: inherit;
+	font: inherit;
+}
+.aero-card:hover { border-color: var(--aero-line); }
+.aero-card.on { border-color: var(--aero-accent); background: rgba(63, 208, 255, .09); }
+.aero-card strong { display: block; font-size: 13px; }
+.aero-card span { display: block; margin-top: 3px; font-size: 11.5px; line-height: 1.35; color: var(--aero-dim); }
+.aero-card i {
+	flex: none;
+	width: 30px;
+	height: 16px;
+	margin-top: 1px;
+	border-radius: 9px;
+	background: rgba(139, 163, 199, .28);
+	position: relative;
+	transition: background 120ms ease;
+}
+.aero-card i::after {
+	content: "";
+	position: absolute;
+	top: 2px;
+	left: 2px;
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	background: #fff;
+	transition: transform 120ms ease;
+}
+.aero-card.on i { background: var(--aero-accent); }
+.aero-card.on i::after { transform: translateX(14px); }
+.aero-row { display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid rgba(139, 163, 199, .12); }
+.aero-row:last-child { border-bottom: 0; }
+.aero-row label { flex: 1; font-size: 13px; }
+.aero-row label small { display: block; margin-top: 2px; color: var(--aero-dim); font-size: 11.5px; }
+.aero-row output { width: 52px; text-align: right; font: 12px var(--aero-font); color: var(--aero-accent-hi); }
+.aero-row input[type=range] { width: 190px; accent-color: var(--aero-accent); }
+.aero-row select, .aero-btn {
+	padding: 7px 12px;
+	border: 1px solid var(--aero-line);
+	border-radius: 6px;
+	background: rgba(63, 208, 255, .08);
+	color: var(--aero-text);
+	font: 600 12px var(--aero-ui);
+	cursor: pointer;
+}
+.aero-row select option { background: #0b1228; }
+.aero-btn:hover, .aero-row select:hover { border-color: var(--aero-accent); background: rgba(63, 208, 255, .16); }
+.aero-btn.is-listening { border-color: var(--aero-amber); color: var(--aero-amber); }
+.aero-swatches { display: flex; gap: 7px; }
+.aero-swatch { width: 22px; height: 22px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; padding: 0; }
+.aero-swatch.on { border-color: #fff; }
+.aero-about { font-size: 13px; line-height: 1.55; color: var(--aero-text); }
+.aero-about h2 { margin: 14px 0 6px; font: 700 12px var(--aero-ui); letter-spacing: .14em; color: var(--aero-accent-hi); text-transform: uppercase; }
+.aero-about h2:first-child { margin-top: 0; }
+.aero-about ul { margin: 0; padding-left: 18px; color: var(--aero-dim); }
+.aero-about li { margin: 3px 0; }
+.aero-deck footer {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 10px 18px;
+	border-top: 1px solid var(--aero-line);
+	font: 11px var(--aero-font);
+	color: var(--aero-dim);
+}
+.aero-deck footer span { margin-right: auto; }
+
+@media (prefers-reduced-motion: reduce) {
+	#aero_boot, .aero-toast, #aero_boot_fill, #game_frame.aero-zooming { transition: none; }
+	.aero-boot-emblem, #aero_boot.is-holding #aero_boot_fill { animation: none; }
+}

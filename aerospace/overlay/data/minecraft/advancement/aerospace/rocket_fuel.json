@@ -1,0 +1,31 @@
+{
+  "parent": "minecraft:aerospace/root",
+  "criteria": {
+    "gunpowder": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:gunpowder"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.aerospace.rocket_fuel.description"
+    },
+    "icon": {
+      "id": "minecraft:gunpowder"
+    },
+    "title": {
+      "translate": "advancements.aerospace.rocket_fuel.title"
+    }
+  },
+  "requirements": [
+    [
+      "gunpowder"
+    ]
+  ]
+}

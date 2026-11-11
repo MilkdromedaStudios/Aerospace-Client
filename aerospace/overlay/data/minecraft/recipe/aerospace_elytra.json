@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "M": "minecraft:phantom_membrane",
+    "N": "minecraft:nether_star",
+    "D": "minecraft:diamond"
+  },
+  "pattern": [
+    "MNM",
+    "MDM",
+    "M M"
+  ],
+  "result": {
+    "id": "minecraft:elytra"
+  }
+}

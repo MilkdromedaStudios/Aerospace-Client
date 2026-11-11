@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:aerospace/ignition",
+  "criteria": {
+    "elytra": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:elytra"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.aerospace.flight_certified.description"
+    },
+    "icon": {
+      "id": "minecraft:elytra"
+    },
+    "title": {
+      "translate": "advancements.aerospace.flight_certified.title"
+    },
+    "frame": "goal"
+  },
+  "requirements": [
+    [
+      "elytra"
+    ]
+  ]
+}

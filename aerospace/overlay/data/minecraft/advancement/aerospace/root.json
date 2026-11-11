@@ -1,0 +1,26 @@
+{
+  "criteria": {
+    "enlisted": {
+      "trigger": "minecraft:location"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.aerospace.root.description"
+    },
+    "icon": {
+      "id": "minecraft:firework_rocket"
+    },
+    "title": {
+      "translate": "advancements.aerospace.root.title"
+    },
+    "announce_to_chat": false,
+    "show_toast": false,
+    "background": "minecraft:gui/advancements/backgrounds/aerospace"
+  },
+  "requirements": [
+    [
+      "enlisted"
+    ]
+  ]
+}
