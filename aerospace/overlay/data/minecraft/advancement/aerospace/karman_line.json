@@ -1,0 +1,40 @@
+{
+  "parent": "minecraft:aerospace/flight_certified",
+  "criteria": {
+    "altitude": {
+      "conditions": {
+        "player": {
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "minecraft:location": {
+              "position": {
+                "y": {
+                  "min": 320.0
+                }
+              }
+            }
+          }
+        }
+      },
+      "trigger": "minecraft:location"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.aerospace.karman_line.description"
+    },
+    "icon": {
+      "id": "minecraft:phantom_membrane"
+    },
+    "title": {
+      "translate": "advancements.aerospace.karman_line.title"
+    },
+    "frame": "goal"
+  },
+  "requirements": [
+    [
+      "altitude"
+    ]
+  ]
+}

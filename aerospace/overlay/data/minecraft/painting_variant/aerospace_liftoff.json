@@ -1,0 +1,13 @@
+{
+  "asset_id": "minecraft:aerospace_liftoff",
+  "author": {
+    "color": "gray",
+    "translate": "painting.minecraft.aerospace_liftoff.author"
+  },
+  "height": 2,
+  "title": {
+    "color": "yellow",
+    "translate": "painting.minecraft.aerospace_liftoff.title"
+  },
+  "width": 2
+}

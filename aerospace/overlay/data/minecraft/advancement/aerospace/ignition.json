@@ -1,0 +1,31 @@
+{
+  "parent": "minecraft:aerospace/rocket_fuel",
+  "criteria": {
+    "rocket": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:firework_rocket"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.aerospace.ignition.description"
+    },
+    "icon": {
+      "id": "minecraft:firework_rocket"
+    },
+    "title": {
+      "translate": "advancements.aerospace.ignition.title"
+    }
+  },
+  "requirements": [
+    [
+      "rocket"
+    ]
+  ]
+}

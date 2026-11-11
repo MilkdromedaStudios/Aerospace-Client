@@ -1,0 +1,31 @@
+{
+  "parent": "minecraft:aerospace/root",
+  "criteria": {
+    "long_fall": {
+      "conditions": {
+        "distance": {
+          "y": {
+            "min": 100.0
+          }
+        }
+      },
+      "trigger": "minecraft:fall_from_height"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.aerospace.reentry.description"
+    },
+    "icon": {
+      "id": "minecraft:water_bucket"
+    },
+    "title": {
+      "translate": "advancements.aerospace.reentry.title"
+    }
+  },
+  "requirements": [
+    [
+      "long_fall"
+    ]
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "asset_id": "minecraft:aerospace_blue_marble",
+  "author": {
+    "color": "gray",
+    "translate": "painting.minecraft.aerospace_blue_marble.author"
+  },
+  "height": 2,
+  "title": {
+    "color": "yellow",
+    "translate": "painting.minecraft.aerospace_blue_marble.title"
+  },
+  "width": 2
+}

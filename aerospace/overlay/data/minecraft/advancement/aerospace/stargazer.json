@@ -1,0 +1,29 @@
+{
+  "parent": "minecraft:aerospace/root",
+  "criteria": {
+    "used_spyglass": {
+      "conditions": {
+        "item": {
+          "items": "minecraft:spyglass"
+        }
+      },
+      "trigger": "minecraft:using_item"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.aerospace.stargazer.description"
+    },
+    "icon": {
+      "id": "minecraft:spyglass"
+    },
+    "title": {
+      "translate": "advancements.aerospace.stargazer.title"
+    }
+  },
+  "requirements": [
+    [
+      "used_spyglass"
+    ]
+  ]
+}

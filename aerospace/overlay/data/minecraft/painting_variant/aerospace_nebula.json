@@ -1,0 +1,13 @@
+{
+  "asset_id": "minecraft:aerospace_nebula",
+  "author": {
+    "color": "gray",
+    "translate": "painting.minecraft.aerospace_nebula.author"
+  },
+  "height": 2,
+  "title": {
+    "color": "yellow",
+    "translate": "painting.minecraft.aerospace_nebula.title"
+  },
+  "width": 2
+}

@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:aerospace/moonwalker",
+  "criteria": {
+    "levitated": {
+      "conditions": {
+        "distance": {
+          "y": {
+            "min": 30.0
+          }
+        }
+      },
+      "trigger": "minecraft:levitation"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.aerospace.zero_g.description"
+    },
+    "icon": {
+      "id": "minecraft:shulker_shell"
+    },
+    "title": {
+      "translate": "advancements.aerospace.zero_g.title"
+    },
+    "frame": "goal"
+  },
+  "requirements": [
+    [
+      "levitated"
+    ]
+  ],
+  "rewards": {
+    "experience": 30
+  }
+}

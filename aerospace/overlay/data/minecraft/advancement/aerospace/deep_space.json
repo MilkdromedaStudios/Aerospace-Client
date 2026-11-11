@@ -1,0 +1,28 @@
+{
+  "parent": "minecraft:aerospace/root",
+  "criteria": {
+    "entered_end": {
+      "conditions": {
+        "to": "minecraft:the_end"
+      },
+      "trigger": "minecraft:changed_dimension"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.aerospace.deep_space.description"
+    },
+    "icon": {
+      "id": "minecraft:end_stone"
+    },
+    "title": {
+      "translate": "advancements.aerospace.deep_space.title"
+    },
+    "frame": "goal"
+  },
+  "requirements": [
+    [
+      "entered_end"
+    ]
+  ]
+}
