@@ -36,6 +36,7 @@ test("Space Expansion is excluded from the default build", () => {
     "data/minecraft/worldgen/noise_settings/mars.json",
     "data/minecraft/function/aerospace/load.mcfunction",
     "assets/minecraft/items/aerospace_rocket.json",
+    "data/minecraft/advancement/aerospace/root.json",
   ]) {
     assert.equal(files.has(path), false, "default build unexpectedly includes " + path);
   }
@@ -52,6 +53,7 @@ test("Space Expansion remains available as an explicit opt-in", () => {
     "data/minecraft/worldgen/noise_settings/mars.json",
     "data/minecraft/function/aerospace/load.mcfunction",
     "assets/minecraft/items/aerospace_rocket.json",
+    "data/minecraft/advancement/aerospace/root.json",
   ]) {
     assert.equal(files.has(path), true, "opt-in build is missing " + path);
   }
