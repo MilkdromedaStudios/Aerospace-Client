@@ -55,7 +55,7 @@ test("Space Expansion remains available as an explicit opt-in", () => {
   ]) {
     assert.equal(files.has(path), true, "opt-in build is missing " + path);
   }
-}
+});
 
 const D = "data/minecraft/";
 const jsonEdit = (fn) => (buf) => { const o = JSON.parse(buf.toString("utf8")); fn(o); return Buffer.from(JSON.stringify(o)); };
