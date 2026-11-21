@@ -10,7 +10,7 @@
  *
  *   1. split the HTML into its shell and base64 payloads
  *   2. unpack assets.epk, apply aerospace/overlay + lang + patches, repack
- *   3. patch the shell (branding, boot screen, client layer, payload sizes)
+ *   3. patch the shell (branding, boot screen, shader engine, client layer, payload sizes)
  *   4. write one self-contained HTML file
  *
  * The three WebAssembly images, the Brotli decoder and sounds.epk are copied
@@ -234,6 +234,9 @@ function patchShell(shell, ctx) {
   const body = [
     template("boot.html").trimEnd(),
     '<script type="text/javascript" id="aerospace-boot">\n' + template("boot.js") + "</script>",
+    // must run before the game creates its WebGL context (main() starts after the
+    // async Wasm compile, so any script in <body> is early enough)
+    '<script type="text/javascript" id="aerospace-shaders">\n' + template("shaders.js") + "</script>",
     '<script type="text/javascript" id="aerospace-client">\n' + template("client.js") + "</script>",
     "",
   ].join("\n");

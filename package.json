@@ -1,6 +1,6 @@
 {
   "name": "aerospace-client",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Aerospace Client: a space-themed browser client built on Eaglercraft 26.3",
   "private": true,
   "license": "Apache-2.0",
@@ -11,6 +11,7 @@
     "build": "node tools/build.js",
     "unpack": "node tools/unpack.js",
     "preview:shell": "node tools/preview-shell.js",
+    "check:shell": "node tools/check-shell.js",
     "art": "python3 tools/art/generate.py",
     "content": "python3 tools/content/generate.py",
     "test": "node --test tools/test/*.test.js"

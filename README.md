@@ -2,7 +2,7 @@
 
 A space-themed browser client built on **Eaglercraft 26.3** (zeus/master).
 
-Aerospace Client takes the stock single-file Eaglercraft 26.3 build and turns it into its own client: new boot screen, new title screen and panorama, a restyled interface, a HUD and settings menu, and extra space-themed content. The game code itself (the three WebAssembly images) is passed through byte-for-byte.
+Aerospace Client takes the stock single-file Eaglercraft 26.3 build and turns it into its own client: new boot screen, new title screen and panorama, a restyled interface, client mods, shader looks, a HUD, and extra space-themed content. The game code itself (the three WebAssembly images) is passed through byte-for-byte.
 
 ## Play
 
@@ -20,10 +20,15 @@ The workflow downloads the pinned upstream build and checks its SHA-256. If that
 
 | Control | Action |
 | --- | --- |
-| Tap `Right Shift` | Open the command deck (Aerospace settings) |
+| Tap `Right Shift` | Open the command deck: client mods, shaders, HUD, settings |
 | Hold `C` | Optical zoom; scroll to change magnification |
+| `F9` | Screenshot to the clipboard (or to a file) |
 
-Both keys can be rebound in the command deck.
+All three keys can be rebound in the command deck.
+
+### Mods
+
+Eaglercraft 26.3 has its own mod loader for `.zip` and `.lua` mods, and Aerospace keeps it unchanged: on the title screen, **Mods** is the button to the right of **Options**. Those mods run in singleplayer only (the game pauses them on servers). Mods are stored per website, so mods you installed on another Eaglercraft site do not appear in Aerospace until you export them there (Mods → pick a mod → Export .zip) and import them here.
 
 ## What is different from stock Eaglercraft 26.3
 
@@ -31,15 +36,26 @@ Both keys can be rebound in the command deck.
 - Aerospace boot screen with a starfield, progress bar and rotating tips, replacing the stock splash and the red loading screen
 - New page title, icon, crash and rotate-device screens
 
-**Client layer** (command deck)
-- HUD instruments: FPS, CPS, keystrokes, clock, mission timer, memory, frame-time graph, client badge
-- Drag-and-drop HUD layout, HUD scale and opacity, six accent colours
-- Optical zoom
-- Visor: brightness boost, saturation, and colour filters (Night Vision, Solar Shield, Deep Space, Thermal, Lunar Mono)
-- Cosmetic helmet visor overlay
-- Rebindable keys, settings saved in the browser
+**Client mods** (command deck → Client Mods)
+- Optical zoom, with scroll to change strength
+- Motion blur, with adjustable strength
+- Screenshot key: copies the frame to the clipboard or saves a PNG
+- Space radio: calm, endlessly generated ambient music
+- Break reminder every 30 to 90 minutes
+- Cosmetic helmet visor overlay and cinematic letterbox bars
 
-The client layer only reads your own keyboard and mouse and restyles the picture. It does not read game memory or change anything sent to servers.
+**Shaders** (command deck → Shaders)
+- Seven looks: Stock, Aerospace, Cinematic, Vibrant, Nebula, Retro CRT, Noir
+- Fine-tuning: glow, sharpen, vignette, film grain, colour fringe, scanlines, contrast, warmth (any change becomes a Custom look)
+- Visor filters (Night Vision, Solar Shield, Deep Space, Thermal, Lunar Mono), brightness that lifts dark caves without washing out the sky, and saturation
+
+The shader engine replaces the one tiny shader the game uses to put each finished frame on screen, so the looks run on the GPU inside the game's own last draw. It only does this when that shader matches the stock one exactly and the replacement compiles on your device; otherwise the game keeps its own shader, and brightness, saturation and visor filters fall back to CSS. With every effect off it is an exact copy, like the original. Stock 26.3's own **Shader Packs...** button (in the pause menu) still works alongside it.
+
+**HUD** (command deck → HUD)
+- FPS, CPS, keystrokes, clock, mission timer, memory, frame-time graph, client badge
+- Drag-and-drop layout, HUD scale and opacity, six accent colours
+
+Client mods only read your own keyboard and mouse, and shaders only restyle the finished picture. Nothing reads game memory or changes what is sent to servers.
 
 **Game assets**
 - "AEROSPACE" title logo, subtitle and loading logo
@@ -73,7 +89,8 @@ Other commands:
 | --- | --- |
 | `npm test` | Tests for the archive and single-file formats |
 | `npm run unpack` | Extracts the stock assets to `.cache/upstream-assets/` so you can see what can be overridden |
-| `npm run preview:shell` | Builds a small mock page for working on the boot screen and HUD without the game |
+| `npm run preview:shell` | Builds a small mock page for working on the boot screen, deck and shaders without the game (its fake game presents frames exactly like 26.3) |
+| `npm run check:shell` | Drives that page in headless Chromium and checks the shader engine and command deck (needs Playwright with Chromium) |
 | `npm run art` | Regenerates the procedural art (needs Python 3 with Pillow and numpy) |
 | `npm run content` | Regenerates advancements, paintings, recipe, splashes and language strings |
 
@@ -84,7 +101,7 @@ Other commands:
 | `aerospace/overlay/` | Files copied over the game's assets, using the same relative paths (`assets/...`, `data/...`) |
 | `aerospace/lang/en_us.json` | Language strings merged into the game's language file |
 | `aerospace/patches.json` | JSON merges and tag additions |
-| `aerospace/shell/` | Boot screen, stylesheet and the client layer (`client.js`) |
+| `aerospace/shell/` | Boot screen, stylesheet, shader engine (`shaders.js`) and the client layer (`client.js`) |
 | `tools/art/` | Procedural art generator |
 | `tools/content/` | Generator for the data-driven content |
 
