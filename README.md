@@ -32,7 +32,7 @@ Eaglercraft 26.3 has its own mod loader for `.zip` and `.lua` mods, and Aerospac
 
 ## Space Expansion
 
-The expansion is built into the game's own data pack, so it is on in every singleplayer world (and in worlds you share over LAN). Servers run their own data packs, so it does not apply there.
+The Space Expansion is currently **disabled by default** while its world-generation loading issue is investigated. This keeps normal world creation on the stable base game. To build an experimental copy with rockets, planets and dungeons enabled, run `node tools/build.js --enable-space-expansion` (or combine it with the usual `--upstream` and `--out` options). Do not use the experimental build for public play until world creation has been verified.
 
 **Getting started.** The first time you join a world you get the **Flight Manual**, which covers all of this. You can also craft it from a book and a firework rocket.
 
