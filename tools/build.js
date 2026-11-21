@@ -94,7 +94,9 @@ function applyAerospace(files, options = {}) {
   // 1. overlay
   const overlayDir = path.join(AERO, "overlay");
   for (const rel of walk(overlayDir)) {
-    if (!spaceExpansion && expansionFiles.has(rel)) continue;
+    // The general Aerospace advancement tree is coupled to the expansion's
+    // welcome function and Flight Manual. Keep that tree out of the safe build too.
+    if (!spaceExpansion && (expansionFiles.has(rel) || rel.startsWith("data/minecraft/advancement/aerospace/"))) continue;
     const data = fs.readFileSync(path.join(overlayDir, rel));
     if (rel.endsWith(".json") || rel.endsWith(".mcmeta")) parseJSON(data, "overlay/" + rel);
     if (rel.endsWith(".png")) {
