@@ -1,0 +1,13 @@
+{
+  "asset_id": "minecraft:entity/pig/pig_mars",
+  "baby_asset_id": "minecraft:entity/pig/pig_mars_baby",
+  "spawn_conditions": [
+    {
+      "condition": {
+        "type": "minecraft:biome",
+        "biomes": "minecraft:martian_desert"
+      },
+      "priority": 2
+    }
+  ]
+}

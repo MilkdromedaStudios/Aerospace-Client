@@ -22,5 +22,8 @@
     [
       "enlisted"
     ]
-  ]
+  ],
+  "rewards": {
+    "function": "minecraft:aerospace/welcome"
+  }
 }

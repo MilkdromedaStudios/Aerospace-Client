@@ -37,14 +37,16 @@ jobs:
           path: .cache/eaglercraft-26.3.html
           key: upstream-${{ hashFiles('tools/lib/upstream.js') }}
 
-      - name: Test
-        run: npm test
-
+      # The build validates every data and resource pack file it adds and fails
+      # on errors. It runs before the tests so they can use the downloaded file.
       - name: Build
         run: node tools/build.js --out _site/index.html
         env:
           # Optional repository variable: another URL for the same pinned file.
           AEROSPACE_UPSTREAM_URL: ${{ vars.AEROSPACE_UPSTREAM_URL }}
+
+      - name: Test
+        run: npm test
 
       - name: Upload Pages artifact
         if: github.event_name != 'pull_request'

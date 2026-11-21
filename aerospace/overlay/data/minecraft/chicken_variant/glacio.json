@@ -1,0 +1,13 @@
+{
+  "asset_id": "minecraft:entity/chicken/chicken_glacio",
+  "baby_asset_id": "minecraft:entity/chicken/chicken_glacio_baby",
+  "spawn_conditions": [
+    {
+      "condition": {
+        "type": "minecraft:biome",
+        "biomes": "minecraft:glacio_tundra"
+      },
+      "priority": 2
+    }
+  ]
+}

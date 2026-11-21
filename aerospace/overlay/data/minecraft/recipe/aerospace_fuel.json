@@ -1,0 +1,39 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:copper_ingot",
+    [
+      "minecraft:coal",
+      "minecraft:charcoal"
+    ],
+    [
+      "minecraft:coal",
+      "minecraft:charcoal"
+    ],
+    "minecraft:gunpowder",
+    "minecraft:blaze_powder"
+  ],
+  "result": {
+    "id": "minecraft:heart_of_the_sea",
+    "count": 2,
+    "components": {
+      "minecraft:item_name": {
+        "translate": "item.minecraft.aerospace_fuel"
+      },
+      "minecraft:item_model": "minecraft:aerospace_fuel",
+      "minecraft:max_stack_size": 16,
+      "minecraft:rarity": "uncommon",
+      "minecraft:lore": [
+        {
+          "translate": "item.minecraft.aerospace_fuel.lore.0",
+          "color": "gray",
+          "italic": false
+        }
+      ],
+      "minecraft:custom_data": {
+        "aerospace_item": "fuel"
+      }
+    }
+  }
+}

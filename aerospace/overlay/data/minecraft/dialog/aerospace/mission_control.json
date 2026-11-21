@@ -1,0 +1,110 @@
+{
+  "type": "minecraft:multi_action",
+  "title": {
+    "translate": "aerospace.mission_control.title",
+    "color": "aqua",
+    "bold": true
+  },
+  "external_title": {
+    "translate": "aerospace.mission_control.external"
+  },
+  "body": [
+    {
+      "type": "minecraft:plain_message",
+      "width": 300,
+      "contents": {
+        "translate": "aerospace.mission_control.body"
+      }
+    }
+  ],
+  "actions": [
+    {
+      "label": {
+        "translate": "aerospace.dest.overworld"
+      },
+      "tooltip": {
+        "translate": "aerospace.dest.overworld.tooltip"
+      },
+      "width": 150,
+      "action": {
+        "type": "minecraft:run_command",
+        "command": "/trigger aero.launch set 1"
+      }
+    },
+    {
+      "label": {
+        "translate": "aerospace.dest.asteroid_belt"
+      },
+      "tooltip": {
+        "translate": "aerospace.dest.asteroid_belt.tooltip"
+      },
+      "width": 150,
+      "action": {
+        "type": "minecraft:run_command",
+        "command": "/trigger aero.launch set 2"
+      }
+    },
+    {
+      "label": {
+        "translate": "aerospace.dest.moon"
+      },
+      "tooltip": {
+        "translate": "aerospace.dest.moon.tooltip"
+      },
+      "width": 150,
+      "action": {
+        "type": "minecraft:run_command",
+        "command": "/trigger aero.launch set 3"
+      }
+    },
+    {
+      "label": {
+        "translate": "aerospace.dest.mars"
+      },
+      "tooltip": {
+        "translate": "aerospace.dest.mars.tooltip"
+      },
+      "width": 150,
+      "action": {
+        "type": "minecraft:run_command",
+        "command": "/trigger aero.launch set 4"
+      }
+    },
+    {
+      "label": {
+        "translate": "aerospace.dest.glacio"
+      },
+      "tooltip": {
+        "translate": "aerospace.dest.glacio.tooltip"
+      },
+      "width": 150,
+      "action": {
+        "type": "minecraft:run_command",
+        "command": "/trigger aero.launch set 5"
+      }
+    },
+    {
+      "label": {
+        "translate": "aerospace.dest.vulcan"
+      },
+      "tooltip": {
+        "translate": "aerospace.dest.vulcan.tooltip"
+      },
+      "width": 150,
+      "action": {
+        "type": "minecraft:run_command",
+        "command": "/trigger aero.launch set 6"
+      }
+    }
+  ],
+  "exit_action": {
+    "label": {
+      "translate": "gui.cancel"
+    },
+    "width": 150
+  },
+  "columns": 2,
+  "can_close_with_escape": true,
+  "pause": true,
+  "after_action": "close"
+}

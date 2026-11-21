@@ -1,0 +1,37 @@
+{
+  "parent": "minecraft:aerospace/root",
+  "criteria": {
+    "got": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:iron_helmet",
+            "predicates": {
+              "minecraft:custom_data": "{aerospace_item:\"space_helmet\"}"
+            }
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.aerospace.suit_up.description"
+    },
+    "icon": {
+      "id": "minecraft:iron_helmet",
+      "components": {
+        "minecraft:item_model": "minecraft:aerospace_space_helmet"
+      }
+    },
+    "title": {
+      "translate": "advancements.aerospace.suit_up.title"
+    }
+  },
+  "requirements": [
+    [
+      "got"
+    ]
+  ]
+}

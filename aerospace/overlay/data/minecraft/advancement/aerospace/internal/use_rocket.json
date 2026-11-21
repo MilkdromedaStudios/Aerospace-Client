@@ -1,0 +1,23 @@
+{
+  "criteria": {
+    "used": {
+      "conditions": {
+        "item": {
+          "items": "minecraft:firework_star",
+          "predicates": {
+            "minecraft:custom_data": "{aerospace_item:\"rocket\"}"
+          }
+        }
+      },
+      "trigger": "minecraft:using_item"
+    }
+  },
+  "requirements": [
+    [
+      "used"
+    ]
+  ],
+  "rewards": {
+    "function": "minecraft:aerospace/rocket/use"
+  }
+}

@@ -1,0 +1,224 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:written_book",
+          "weight": 1,
+          "modifier": {
+            "type": "minecraft:set_components",
+            "components": {
+              "minecraft:written_book_content": {
+                "title": "Flight Manual",
+                "author": "Aerospace Program",
+                "pages": [
+                  {
+                    "translate": "book.aerospace.manual.page0"
+                  },
+                  {
+                    "translate": "book.aerospace.manual.page1"
+                  },
+                  {
+                    "translate": "book.aerospace.manual.page2"
+                  },
+                  {
+                    "translate": "book.aerospace.manual.page3"
+                  },
+                  {
+                    "translate": "book.aerospace.manual.page4"
+                  },
+                  {
+                    "translate": "book.aerospace.manual.page5"
+                  }
+                ],
+                "resolved": true
+              },
+              "minecraft:custom_data": {
+                "aerospace_item": "manual"
+              }
+            }
+          }
+        }
+      ],
+      "rolls": 1
+    },
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:heart_of_the_sea",
+          "weight": 30,
+          "modifier": [
+            {
+              "type": "minecraft:set_components",
+              "components": {
+                "minecraft:item_name": {
+                  "translate": "item.minecraft.aerospace_fuel"
+                },
+                "minecraft:item_model": "minecraft:aerospace_fuel",
+                "minecraft:max_stack_size": 16,
+                "minecraft:rarity": "uncommon",
+                "minecraft:lore": [
+                  {
+                    "translate": "item.minecraft.aerospace_fuel.lore.0",
+                    "color": "gray",
+                    "italic": false
+                  }
+                ],
+                "minecraft:custom_data": {
+                  "aerospace_item": "fuel"
+                }
+              }
+            },
+            {
+              "type": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 3.0,
+                "min": 1.0
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:iron_ingot",
+          "weight": 20,
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "max": 6.0,
+              "min": 2.0
+            }
+          }
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:copper_ingot",
+          "weight": 20,
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "max": 8.0,
+              "min": 3.0
+            }
+          }
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:redstone",
+          "weight": 15,
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "max": 6.0,
+              "min": 2.0
+            }
+          }
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:gunpowder",
+          "weight": 15,
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "max": 5.0,
+              "min": 2.0
+            }
+          }
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:blaze_powder",
+          "weight": 8,
+          "modifier": {
+            "type": "minecraft:set_count",
+            "count": {
+              "type": "minecraft:uniform",
+              "max": 3.0,
+              "min": 1.0
+            }
+          }
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:firework_star",
+          "weight": 3,
+          "modifier": {
+            "type": "minecraft:set_components",
+            "components": {
+              "minecraft:item_name": {
+                "translate": "item.minecraft.aerospace_rocket"
+              },
+              "minecraft:item_model": "minecraft:aerospace_rocket",
+              "minecraft:max_stack_size": 1,
+              "minecraft:rarity": "rare",
+              "minecraft:lore": [
+                {
+                  "translate": "item.minecraft.aerospace_rocket.lore.0",
+                  "color": "gray",
+                  "italic": false
+                },
+                {
+                  "translate": "item.minecraft.aerospace_rocket.lore.1",
+                  "color": "gray",
+                  "italic": false
+                }
+              ],
+              "minecraft:consumable": {
+                "consume_seconds": 3600.0,
+                "animation": "none",
+                "has_consume_particles": false
+              },
+              "minecraft:custom_data": {
+                "aerospace_item": "rocket"
+              }
+            }
+          }
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:iron_helmet",
+          "weight": 4,
+          "modifier": {
+            "type": "minecraft:set_components",
+            "components": {
+              "minecraft:item_name": {
+                "translate": "item.minecraft.aerospace_space_helmet"
+              },
+              "minecraft:item_model": "minecraft:aerospace_space_helmet",
+              "minecraft:equippable": {
+                "slot": "head",
+                "asset_id": "minecraft:aerospace_space_suit",
+                "equip_sound": "minecraft:item.armor.equip_iron"
+              },
+              "minecraft:lore": [
+                {
+                  "translate": "item.minecraft.aerospace_space_helmet.lore.0",
+                  "color": "gray",
+                  "italic": false
+                }
+              ],
+              "minecraft:custom_data": {
+                "aerospace_item": "space_helmet"
+              }
+            }
+          }
+        }
+      ],
+      "rolls": {
+        "type": "minecraft:uniform",
+        "max": 4.0,
+        "min": 2.0
+      }
+    }
+  ],
+  "random_sequence": "minecraft:chests/aerospace/crash_site"
+}
