@@ -29,12 +29,13 @@ const AERO = path.join(ROOT, "aerospace");
 const pkg = JSON.parse(fs.readFileSync(path.join(ROOT, "package.json"), "utf8"));
 
 function parseArgs(argv) {
-  const args = { out: path.join(ROOT, "docs", "index.html"), upstream: null };
+  const args = { out: path.join(ROOT, "docs", "index.html"), upstream: null, spaceExpansion: false };
   for (let i = 2; i < argv.length; ++i) {
     if (argv[i] === "--upstream") args.upstream = path.resolve(argv[++i]);
+    else if (argv[i] === "--enable-space-expansion") args.spaceExpansion = true;
     else if (argv[i] === "--out") args.out = path.resolve(argv[++i]);
     else if (argv[i] === "-h" || argv[i] === "--help") {
-      console.log("usage: node tools/build.js [--upstream <file.html>] [--out <file.html>]");
+      console.log("usage: node tools/build.js [--upstream <file.html>] [--out <file.html>] [--enable-space-expansion]");
       process.exit(0);
     } else throw new Error("unknown argument: " + argv[i]);
   }
@@ -80,14 +81,22 @@ const parseJSON = (buf, name) => {
 const RESIZABLE = /^assets\/minecraft\/textures\/gui\/title\/background\/panorama_\d\.png$/;
 
 /** Applies overlay, lang and patches to an asset map in place. */
-function applyAerospace(files) {
+function applyAerospace(files, options = {}) {
   const stock = new Map(files);
+  const spaceExpansion = options.spaceExpansion === true;
+  const generatedManifest = path.join(ROOT, "tools", "expansion", "generated-files.txt");
+  const expansionFiles = new Set(fs.existsSync(generatedManifest)
+    ? fs.readFileSync(generatedManifest, "utf8").split(/\r?\n/).filter(Boolean)
+    : []);
   const ours = new Set();
   const stats = { replaced: 0, added: 0, langKeys: 0 };
 
   // 1. overlay
   const overlayDir = path.join(AERO, "overlay");
   for (const rel of walk(overlayDir)) {
+    // The general Aerospace advancement tree is coupled to the expansion's
+    // welcome function and Flight Manual. Keep that tree out of the safe build too.
+    if (!spaceExpansion && (expansionFiles.has(rel) || rel.startsWith("data/minecraft/advancement/aerospace/"))) continue;
     const data = fs.readFileSync(path.join(overlayDir, rel));
     if (rel.endsWith(".json") || rel.endsWith(".mcmeta")) parseJSON(data, "overlay/" + rel);
     if (rel.endsWith(".png")) {
@@ -111,6 +120,7 @@ function applyAerospace(files) {
   const langDir = path.join(AERO, "lang");
   const langOwner = new Map();
   for (const rel of walk(langDir)) {
+    if (!spaceExpansion && rel.endsWith(".expansion.json")) continue;
     const locale = rel.split(".")[0];
     const patch = parseJSON(fs.readFileSync(path.join(langDir, rel)), "lang/" + rel);
     for (const key of Object.keys(patch)) {
@@ -138,7 +148,7 @@ function applyAerospace(files) {
   }
 
   // 3. structural JSON patches: patches.json, then patches.<part>.json
-  const patchFiles = fs.readdirSync(AERO).filter((f) => /^patches(\.[a-z0-9_-]+)?\.json$/.test(f))
+  const patchFiles = fs.readdirSync(AERO).filter((f) => /^patches(\.[a-z0-9_-]+)?\.json$/.test(f) && (spaceExpansion || f !== "patches.expansion.json"))
     .sort((a, b) => (a === "patches.json" ? -1 : b === "patches.json" ? 1 : a.localeCompare(b)));
   for (const patchFile of patchFiles) {
     const patches = parseJSON(fs.readFileSync(path.join(AERO, patchFile)), patchFile);
@@ -191,9 +201,9 @@ function applyAerospace(files) {
   return { stock, ours, stats };
 }
 
-function patchAssets(epk) {
+function patchAssets(epk, options = {}) {
   const files = epk.files;
-  const { stock, ours, stats } = applyAerospace(files);
+  const { stock, ours, stats } = applyAerospace(files, options);
 
   // 5. static validation of everything Aerospace added or changed
   const result = validate({ stock, files, ours });
@@ -293,8 +303,9 @@ async function main() {
   const assetsBytes = sf.decodePayload(payloads.get("eag-inline-assets"));
   const epk = readEPK(assetsBytes);
   const before = epk.files.size;
-  const stats = patchAssets(epk);
+  const stats = patchAssets(epk, args);
   log(`assets: ${before} upstream files, ${stats.replaced} replaced, ${stats.added} added, ${stats.langKeys} language strings changed`);
+  log(args.spaceExpansion ? "Space Expansion enabled (experimental)" : "Space Expansion disabled (safe default; use --enable-space-expansion to opt in)");
 
   epk.comment = "\n\n #  Aerospace Client " + pkg.version + " assets\n #  built on Eaglercraft (EPK v2.0)\n\n";
   const packed = writeEPK(epk);

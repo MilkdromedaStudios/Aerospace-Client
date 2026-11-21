@@ -20,11 +20,44 @@ function load() {
   if (!base) {
     const { payloads } = sf.splitSingleFile(fs.readFileSync(UPSTREAM, "latin1"));
     const files = readEPK(sf.decodePayload(payloads.get("eag-inline-assets"))).files;
-    const { stock, ours } = applyAerospace(files);
+    const { stock, ours } = applyAerospace(files, { spaceExpansion: true });
     base = { stock, files, ours };
   }
   return base;
 }
+
+test("Space Expansion is excluded from the default build", () => {
+  const { stock } = load();
+  const files = new Map(stock);
+  const { ours } = applyAerospace(files);
+  for (const path of [
+    "data/minecraft/dimension/moon.json",
+    "data/minecraft/dimension_type/moon.json",
+    "data/minecraft/worldgen/noise_settings/mars.json",
+    "data/minecraft/function/aerospace/load.mcfunction",
+    "assets/minecraft/items/aerospace_rocket.json",
+    "data/minecraft/advancement/aerospace/root.json",
+  ]) {
+    assert.equal(files.has(path), false, "default build unexpectedly includes " + path);
+  }
+  assert.equal(ours.has("data/minecraft/dimension/moon.json"), false);
+});
+
+test("Space Expansion remains available as an explicit opt-in", () => {
+  const { stock } = load();
+  const files = new Map(stock);
+  applyAerospace(files, { spaceExpansion: true });
+  for (const path of [
+    "data/minecraft/dimension/moon.json",
+    "data/minecraft/dimension_type/moon.json",
+    "data/minecraft/worldgen/noise_settings/mars.json",
+    "data/minecraft/function/aerospace/load.mcfunction",
+    "assets/minecraft/items/aerospace_rocket.json",
+    "data/minecraft/advancement/aerospace/root.json",
+  ]) {
+    assert.equal(files.has(path), true, "opt-in build is missing " + path);
+  }
+});
 
 const D = "data/minecraft/";
 const jsonEdit = (fn) => (buf) => { const o = JSON.parse(buf.toString("utf8")); fn(o); return Buffer.from(JSON.stringify(o)); };
