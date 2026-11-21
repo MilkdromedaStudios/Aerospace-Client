@@ -20,7 +20,7 @@ function load() {
   if (!base) {
     const { payloads } = sf.splitSingleFile(fs.readFileSync(UPSTREAM, "latin1"));
     const files = readEPK(sf.decodePayload(payloads.get("eag-inline-assets"))).files;
-    const { stock, ours } = applyAerospace(files);
+    const { stock, ours } = applyAerospace(files, { spaceExpansion: true });
     base = { stock, files, ours };
   }
   return base;
