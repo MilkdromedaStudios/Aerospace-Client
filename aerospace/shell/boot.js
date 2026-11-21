@@ -21,7 +21,11 @@
 	var TIPS = [
 		"Tap Right Shift at any time to open the Aerospace command deck.",
 		"Hold C in a world to zoom. Scroll while zooming to change magnification.",
-		"The Visor tab can boost brightness for caves and night flights.",
+		"Pick a look under Shaders in the command deck: Cinematic, Nebula, Retro CRT and more.",
+		"Brightness under Shaders lifts dark caves without washing out the sky.",
+		"Press F9 to copy a screenshot to your clipboard.",
+		"Eaglercraft's own mod loader is on the title screen: Mods, next to Options.",
+		"Turn on Space radio under Client Mods for calm generated music.",
 		"Drag HUD instruments anywhere with “Edit HUD layout” in the command deck.",
 		"Look up at night: the Moon is now a ringed ice world.",
 		"New advancements await under the Aerospace tab. Try reaching the build limit.",
