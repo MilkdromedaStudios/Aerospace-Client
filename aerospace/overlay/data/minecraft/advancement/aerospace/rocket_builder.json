@@ -1,0 +1,38 @@
+{
+  "parent": "minecraft:aerospace/fuel_up",
+  "criteria": {
+    "got": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:firework_star",
+            "predicates": {
+              "minecraft:custom_data": "{aerospace_item:\"rocket\"}"
+            }
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.aerospace.rocket_builder.description"
+    },
+    "icon": {
+      "id": "minecraft:firework_star",
+      "components": {
+        "minecraft:item_model": "minecraft:aerospace_rocket"
+      }
+    },
+    "title": {
+      "translate": "advancements.aerospace.rocket_builder.title"
+    },
+    "frame": "goal"
+  },
+  "requirements": [
+    [
+      "got"
+    ]
+  ]
+}

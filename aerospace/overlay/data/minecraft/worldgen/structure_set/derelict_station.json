@@ -1,0 +1,14 @@
+{
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 61127306,
+    "separation": 5,
+    "spacing": 14
+  },
+  "structures": [
+    {
+      "structure": "minecraft:derelict_station",
+      "weight": 1
+    }
+  ]
+}

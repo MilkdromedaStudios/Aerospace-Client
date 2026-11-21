@@ -1,0 +1,27 @@
+{
+  "parent": "minecraft:aerospace/liftoff",
+  "criteria": {
+    "arrived": {
+      "conditions": {
+        "to": "minecraft:moon"
+      },
+      "trigger": "minecraft:changed_dimension"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.aerospace.visit_moon.description"
+    },
+    "icon": {
+      "id": "minecraft:light_gray_concrete_powder"
+    },
+    "title": {
+      "translate": "advancements.aerospace.visit_moon.title"
+    }
+  },
+  "requirements": [
+    [
+      "arrived"
+    ]
+  ]
+}

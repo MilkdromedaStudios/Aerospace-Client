@@ -1,0 +1,21 @@
+{
+  "values": [
+    "minecraft:zombie",
+    "minecraft:husk",
+    "minecraft:stray",
+    "minecraft:skeleton",
+    "minecraft:wither_skeleton",
+    "minecraft:spider",
+    "minecraft:creeper",
+    "minecraft:enderman",
+    "minecraft:endermite",
+    "minecraft:silverfish",
+    "minecraft:cow",
+    "minecraft:pig",
+    "minecraft:chicken",
+    "minecraft:polar_bear",
+    "minecraft:magma_cube",
+    "minecraft:blaze",
+    "minecraft:strider"
+  ]
+}

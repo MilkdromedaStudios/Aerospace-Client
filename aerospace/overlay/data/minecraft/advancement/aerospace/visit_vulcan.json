@@ -1,0 +1,27 @@
+{
+  "parent": "minecraft:aerospace/liftoff",
+  "criteria": {
+    "arrived": {
+      "conditions": {
+        "to": "minecraft:vulcan"
+      },
+      "trigger": "minecraft:changed_dimension"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.aerospace.visit_vulcan.description"
+    },
+    "icon": {
+      "id": "minecraft:magma_block"
+    },
+    "title": {
+      "translate": "advancements.aerospace.visit_vulcan.title"
+    }
+  },
+  "requirements": [
+    [
+      "arrived"
+    ]
+  ]
+}

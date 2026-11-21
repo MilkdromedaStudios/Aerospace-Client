@@ -24,7 +24,7 @@ def write(path, obj):
 
 
 # ------------------------------------------------------------ advancements --
-def advancement(name, title, description, icon, criteria, parent=None, frame=None, xp=None, root=False):
+def advancement(name, title, description, icon, criteria, parent=None, frame=None, xp=None, root=False, function=None):
     key = "advancements.aerospace.%s" % name
     LANG[key + ".title"] = title
     LANG[key + ".description"] = description
@@ -45,8 +45,12 @@ def advancement(name, title, description, icon, criteria, parent=None, frame=Non
     data["criteria"] = criteria
     data["display"] = display
     data["requirements"] = [[name] for name in criteria]
-    if xp:
-        data["rewards"] = {"experience": xp}
+    if xp or function:
+        data["rewards"] = {}
+        if xp:
+            data["rewards"]["experience"] = xp
+        if function:
+            data["rewards"]["function"] = function
     write("data/minecraft/advancement/aerospace/%s.json" % name, data)
 
 
@@ -68,8 +72,9 @@ def above(y):
 
 
 def advancements():
+    # joining a world for the first time hands out the Flight Manual (tools/expansion)
     advancement("root", "Aerospace Program", "Every mission starts on the ground", "firework_rocket",
-                {"enlisted": {"trigger": "minecraft:location"}}, root=True)
+                {"enlisted": {"trigger": "minecraft:location"}}, root=True, function="minecraft:aerospace/welcome")
     advancement("stargazer", "Stargazer", "Survey the sky through a Spyglass", "spyglass",
                 {"used_spyglass": {"conditions": {"item": {"items": "minecraft:spyglass"}},
                                    "trigger": "minecraft:using_item"}}, parent="root")

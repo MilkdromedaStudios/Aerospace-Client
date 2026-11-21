@@ -9,7 +9,7 @@
  * Client single-file build:
  *
  *   1. split the HTML into its shell and base64 payloads
- *   2. unpack assets.epk, apply aerospace/overlay + lang + patches, repack
+ *   2. unpack assets.epk, apply aerospace/overlay + lang + patches, validate, repack
  *   3. patch the shell (branding, boot screen, shader engine, client layer, payload sizes)
  *   4. write one self-contained HTML file
  *
@@ -22,6 +22,7 @@ const crypto = require("crypto");
 const { readEPK, writeEPK } = require("./lib/epk");
 const sf = require("./lib/singlefile");
 const { resolveUpstream } = require("./lib/upstream");
+const { validate } = require("./lib/validate");
 
 const ROOT = path.resolve(__dirname, "..");
 const AERO = path.join(ROOT, "aerospace");
@@ -78,8 +79,10 @@ const parseJSON = (buf, name) => {
 // ------------------------------------------------------------------ assets --
 const RESIZABLE = /^assets\/minecraft\/textures\/gui\/title\/background\/panorama_\d\.png$/;
 
-function patchAssets(epk) {
-  const files = epk.files;
+/** Applies overlay, lang and patches to an asset map in place. */
+function applyAerospace(files) {
+  const stock = new Map(files);
+  const ours = new Set();
   const stats = { replaced: 0, added: 0, langKeys: 0 };
 
   // 1. overlay
@@ -99,14 +102,22 @@ function patchAssets(epk) {
     }
     if (files.has(rel)) stats.replaced++; else stats.added++;
     files.set(rel, data);
+    ours.add(rel);
   }
 
   // 2. language keys: merged into the minecraft namespace, and overridden in any
-  //    other namespace that already defines the same key
+  //    other namespace that already defines the same key. Each locale can be
+  //    split over several files: en_us.json, en_us.<part>.json, ...
   const langDir = path.join(AERO, "lang");
+  const langOwner = new Map();
   for (const rel of walk(langDir)) {
-    const locale = rel.replace(/\.json$/, "");
+    const locale = rel.split(".")[0];
     const patch = parseJSON(fs.readFileSync(path.join(langDir, rel)), "lang/" + rel);
+    for (const key of Object.keys(patch)) {
+      const owner = langOwner.get(locale + "/" + key);
+      if (owner) fail(`lang key ${key} is defined in both lang/${owner} and lang/${rel}`);
+      langOwner.set(locale + "/" + key, rel);
+    }
     const mainPath = `assets/minecraft/lang/${locale}.json`;
     if (!files.has(mainPath)) fail("upstream has no language file " + mainPath);
     for (const [name, data] of [...files]) {
@@ -122,21 +133,27 @@ function patchAssets(epk) {
         } else if (name !== mainPath) continue;
         if (lang[key] !== value) { lang[key] = value; touched = true; stats.langKeys++; }
       }
-      if (touched) files.set(name, jsonText(lang));
+      if (touched) { files.set(name, jsonText(lang)); ours.add(name); }
     }
   }
 
-  // 3. structural JSON patches
-  const patches = parseJSON(fs.readFileSync(path.join(AERO, "patches.json")), "patches.json");
-  for (const [name, patch] of Object.entries(patches.merge || {})) {
-    if (!files.has(name)) fail("patches.json merge target missing: " + name);
-    files.set(name, jsonText(deepMerge(parseJSON(files.get(name), name), patch)));
-  }
-  for (const [name, values] of Object.entries(patches.appendValues || {})) {
-    if (!files.has(name)) fail("patches.json appendValues target missing: " + name);
-    const tag = parseJSON(files.get(name), name);
-    for (const v of values) if (!tag.values.includes(v)) tag.values.push(v);
-    files.set(name, jsonText(tag));
+  // 3. structural JSON patches: patches.json, then patches.<part>.json
+  const patchFiles = fs.readdirSync(AERO).filter((f) => /^patches(\.[a-z0-9_-]+)?\.json$/.test(f))
+    .sort((a, b) => (a === "patches.json" ? -1 : b === "patches.json" ? 1 : a.localeCompare(b)));
+  for (const patchFile of patchFiles) {
+    const patches = parseJSON(fs.readFileSync(path.join(AERO, patchFile)), patchFile);
+    for (const [name, patch] of Object.entries(patches.merge || {})) {
+      if (!files.has(name)) fail(`${patchFile} merge target missing: ${name}`);
+      files.set(name, jsonText(deepMerge(parseJSON(files.get(name), name), patch)));
+      ours.add(name);
+    }
+    for (const [name, values] of Object.entries(patches.appendValues || {})) {
+      if (!files.has(name)) fail(`${patchFile} appendValues target missing: ${name}`);
+      const tag = parseJSON(files.get(name), name);
+      for (const v of values) if (!tag.values.includes(v)) tag.values.push(v);
+      files.set(name, jsonText(tag));
+      ours.add(name);
+    }
   }
 
   // 4. cross-checks, so a typo fails the build instead of the world load
@@ -170,6 +187,21 @@ function patchAssets(epk) {
   const placeable = parseJSON(files.get("data/minecraft/tags/painting_variant/placeable.json"), "placeable.json");
   for (const id of placeable.values) {
     if (!files.has(idPath(id, ["data", "painting_variant"], ".json"))) fail("placeable painting tag references unknown variant " + id);
+  }
+  return { stock, ours, stats };
+}
+
+function patchAssets(epk) {
+  const files = epk.files;
+  const { stock, ours, stats } = applyAerospace(files);
+
+  // 5. static validation of everything Aerospace added or changed
+  const result = validate({ stock, files, ours });
+  for (const note of result.notes) log("validate: " + note);
+  if (result.errors.length) {
+    const limit = process.env.AEROSPACE_ALL_ERRORS ? Infinity : 60;
+    const shown = result.errors.slice(0, limit).map((e) => "  - " + e).join("\n");
+    fail(`${result.errors.length} validation error(s):\n${shown}${result.errors.length > limit ? "\n  … (AEROSPACE_ALL_ERRORS=1 shows all)" : ""}`);
   }
   return stats;
 }
@@ -286,4 +318,8 @@ async function main() {
   log("sha256 " + sha);
 }
 
-main().catch((e) => { console.error("[aerospace] build failed: " + e.message); process.exit(1); });
+module.exports = { applyAerospace };
+
+if (require.main === module) {
+  main().catch((e) => { console.error("[aerospace] build failed: " + e.message); process.exit(1); });
+}

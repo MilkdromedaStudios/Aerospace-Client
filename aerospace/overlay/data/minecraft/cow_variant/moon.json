@@ -1,0 +1,13 @@
+{
+  "asset_id": "minecraft:entity/cow/cow_moon",
+  "baby_asset_id": "minecraft:entity/cow/cow_moon_baby",
+  "spawn_conditions": [
+    {
+      "condition": {
+        "type": "minecraft:biome",
+        "biomes": "minecraft:lunar_highlands"
+      },
+      "priority": 2
+    }
+  ]
+}

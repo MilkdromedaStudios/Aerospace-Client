@@ -1,0 +1,36 @@
+{
+  "parent": "minecraft:aerospace/visit_glacio",
+  "criteria": {
+    "found": {
+      "conditions": {
+        "player": {
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "minecraft:location": {
+              "structures": "minecraft:ice_vault"
+            }
+          }
+        }
+      },
+      "trigger": "minecraft:location"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.aerospace.find_ice_vault.description"
+    },
+    "icon": {
+      "id": "minecraft:chest"
+    },
+    "title": {
+      "translate": "advancements.aerospace.find_ice_vault.title"
+    },
+    "frame": "goal"
+  },
+  "requirements": [
+    [
+      "found"
+    ]
+  ]
+}

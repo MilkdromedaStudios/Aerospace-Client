@@ -1,0 +1,28 @@
+{
+  "parent": "minecraft:aerospace/rocket_builder",
+  "criteria": {
+    "launched": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.aerospace.liftoff.description"
+    },
+    "icon": {
+      "id": "minecraft:firework_rocket"
+    },
+    "title": {
+      "translate": "advancements.aerospace.liftoff.title"
+    },
+    "frame": "goal"
+  },
+  "requirements": [
+    [
+      "launched"
+    ]
+  ],
+  "rewards": {
+    "experience": 20
+  }
+}

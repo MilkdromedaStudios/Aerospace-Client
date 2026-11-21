@@ -1,0 +1,27 @@
+{
+  "parent": "minecraft:aerospace/liftoff",
+  "criteria": {
+    "arrived": {
+      "conditions": {
+        "to": "minecraft:mars"
+      },
+      "trigger": "minecraft:changed_dimension"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.aerospace.visit_mars.description"
+    },
+    "icon": {
+      "id": "minecraft:red_sand"
+    },
+    "title": {
+      "translate": "advancements.aerospace.visit_mars.title"
+    }
+  },
+  "requirements": [
+    [
+      "arrived"
+    ]
+  ]
+}

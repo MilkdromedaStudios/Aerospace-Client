@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:glacio",
+  "generator": {
+    "type": "minecraft:noise",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "minecraft:glacio_tundra"
+    },
+    "settings": "minecraft:glacio"
+  }
+}

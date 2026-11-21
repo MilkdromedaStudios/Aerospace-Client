@@ -1,0 +1,18 @@
+{
+  "appendValues": {
+    "data/minecraft/tags/block/animals_spawnable_on.json": [
+      "minecraft:light_gray_concrete_powder",
+      "minecraft:red_sand",
+      "minecraft:snow_block"
+    ],
+    "data/minecraft/tags/damage_type/bypasses_armor.json": [
+      "minecraft:aerospace_vacuum"
+    ],
+    "data/minecraft/tags/dialog/pause_screen_additions.json": [
+      "minecraft:aerospace/mission_control"
+    ],
+    "data/minecraft/tags/dialog/quick_actions.json": [
+      "minecraft:aerospace/mission_control"
+    ]
+  }
+}

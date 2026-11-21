@@ -1,0 +1,37 @@
+{
+  "parent": "minecraft:aerospace/rocket_fuel",
+  "criteria": {
+    "got": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:heart_of_the_sea",
+            "predicates": {
+              "minecraft:custom_data": "{aerospace_item:\"fuel\"}"
+            }
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.aerospace.fuel_up.description"
+    },
+    "icon": {
+      "id": "minecraft:heart_of_the_sea",
+      "components": {
+        "minecraft:item_model": "minecraft:aerospace_fuel"
+      }
+    },
+    "title": {
+      "translate": "advancements.aerospace.fuel_up.title"
+    }
+  },
+  "requirements": [
+    [
+      "got"
+    ]
+  ]
+}

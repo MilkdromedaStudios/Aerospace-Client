@@ -1,0 +1,67 @@
+{
+  "parent": "minecraft:aerospace/visit_vulcan",
+  "criteria": {
+    "asteroid_belt": {
+      "conditions": {
+        "to": "minecraft:asteroid_belt"
+      },
+      "trigger": "minecraft:changed_dimension"
+    },
+    "moon": {
+      "conditions": {
+        "to": "minecraft:moon"
+      },
+      "trigger": "minecraft:changed_dimension"
+    },
+    "mars": {
+      "conditions": {
+        "to": "minecraft:mars"
+      },
+      "trigger": "minecraft:changed_dimension"
+    },
+    "glacio": {
+      "conditions": {
+        "to": "minecraft:glacio"
+      },
+      "trigger": "minecraft:changed_dimension"
+    },
+    "vulcan": {
+      "conditions": {
+        "to": "minecraft:vulcan"
+      },
+      "trigger": "minecraft:changed_dimension"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.aerospace.grand_tour.description"
+    },
+    "icon": {
+      "id": "minecraft:nether_star"
+    },
+    "title": {
+      "translate": "advancements.aerospace.grand_tour.title"
+    },
+    "frame": "challenge"
+  },
+  "requirements": [
+    [
+      "asteroid_belt"
+    ],
+    [
+      "moon"
+    ],
+    [
+      "mars"
+    ],
+    [
+      "glacio"
+    ],
+    [
+      "vulcan"
+    ]
+  ],
+  "rewards": {
+    "experience": 150
+  }
+}

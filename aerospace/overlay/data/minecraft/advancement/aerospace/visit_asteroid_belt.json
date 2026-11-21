@@ -1,0 +1,27 @@
+{
+  "parent": "minecraft:aerospace/liftoff",
+  "criteria": {
+    "arrived": {
+      "conditions": {
+        "to": "minecraft:asteroid_belt"
+      },
+      "trigger": "minecraft:changed_dimension"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.aerospace.visit_asteroid_belt.description"
+    },
+    "icon": {
+      "id": "minecraft:tuff"
+    },
+    "title": {
+      "translate": "advancements.aerospace.visit_asteroid_belt.title"
+    }
+  },
+  "requirements": [
+    [
+      "arrived"
+    ]
+  ]
+}

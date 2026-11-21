@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "minecraft:aerospace_martian"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "minecraft:aerospace_martian"
+      }
+    ]
+  }
+}

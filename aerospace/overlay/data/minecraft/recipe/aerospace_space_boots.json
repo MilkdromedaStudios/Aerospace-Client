@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "W": "minecraft:white_wool"
+  },
+  "pattern": [
+    "I I",
+    "W W"
+  ],
+  "result": {
+    "id": "minecraft:iron_boots",
+    "count": 1,
+    "components": {
+      "minecraft:item_name": {
+        "translate": "item.minecraft.aerospace_space_boots"
+      },
+      "minecraft:item_model": "minecraft:aerospace_space_boots",
+      "minecraft:equippable": {
+        "slot": "feet",
+        "asset_id": "minecraft:aerospace_space_suit",
+        "equip_sound": "minecraft:item.armor.equip_iron"
+      },
+      "minecraft:lore": [
+        {
+          "translate": "item.minecraft.aerospace_space_boots.lore.0",
+          "color": "gray",
+          "italic": false
+        }
+      ],
+      "minecraft:custom_data": {
+        "aerospace_item": "space_suit"
+      }
+    }
+  }
+}
