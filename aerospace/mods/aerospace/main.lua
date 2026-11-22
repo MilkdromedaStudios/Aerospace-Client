@@ -15,7 +15,7 @@
 -- cheats allowed in the world. Commands stay under the 256-character chat
 -- limit: items are given through one-item loot tables.
 
-local VERSION = "3.0.0"
+local VERSION = "3.1.0"
 local MAX_FUEL = 8
 local MARKER = "AeroRocket:"
 
@@ -669,8 +669,50 @@ hud.add("aerospace", function(ctx)
   end
 end)
 
+-- ------------------------------------------------------------------ supplies
+-- The creative inventory's tabs are built into the game and a mod cannot add
+-- to them, so the space items come from this menu instead (press J, or
+-- /aerospace items). Giving items is a game command: creative worlds allow it.
+local LOOT = "minecraft:aerospace/item/"
+local SUPPLIES = {
+  { "Rocket", { { "rocket", 1 } } },
+  { "Rocket Fuel x8", { { "fuel", 8 } } },
+  { "Landing Pad x4", { { "landing_pad", 4 } } },
+  { "Space Suit (full set)", { { "space_helmet", 1 }, { "space_chestplate", 1 }, { "space_leggings", 1 }, { "space_boots", 1 } } },
+  { "Flight Manual", { { "flight_manual", 1 } } },
+  { "Everything above", nil },
+}
+local function giveSupply(entries)
+  for _, e in ipairs(entries) do
+    for _ = 1, e[2] do run("loot give @s loot " .. LOOT .. e[1]) end
+  end
+end
+local function openSupplies()
+  if not game.inWorld() then return end
+  ui.open(ui.screen({
+    title = "Space Supplies",
+    init = function(screen)
+      screen:label({ text = "Take what you need for a flight.", centered = true })
+      for _, s in ipairs(SUPPLIES) do
+        screen:button({ text = s[1], onClick = function()
+          if needCheats() then return end
+          if s[2] then giveSupply(s[2])
+          else for _, all in ipairs(SUPPLIES) do if all[2] then giveSupply(all[2]) end end end
+          notify("Supplies added to your inventory.")
+        end })
+      end
+      screen:button({ text = "Close", onClick = function() screen:close() end })
+    end,
+  }))
+end
+keys.bind({ id = "supplies", label = "Space Supplies menu", default = "j", onPress = function()
+  if game.screen() == nil then openSupplies() end
+end })
+
 commands.register("aerospace", function(args)
+  if args and args[1] == "items" then openSupplies() return end
   say("Aerospace " .. VERSION .. ": build a Landing Pad, place a Rocket on it, right click the rocket to fuel and launch. " ..
+    "Press J (or /aerospace items) for Space Supplies. " ..
     "Rockets: " .. (function() local n = 0 for _ in pairs(rockets) do n = n + 1 end return n end)() ..
     "  Cheats: " .. (cheats == nil and "not checked yet" or (cheats and "on" or "off")))
 end, "Aerospace help and status")

@@ -1004,8 +1004,19 @@
 					+ kbd(cfg.zoomKey) + " to zoom.", 9000);
 			}
 		}
-		if (window.__aerospaceBootDone) reveal();
-		else window.addEventListener("aerospace:ready", reveal, { once: true });
+		// show the HUD once the game has drawn its first frame
+		(function waitForGame() {
+			if (window.__aerospaceBootDone || window.__eaglerGameReady === true) {
+				if (!window.__aerospaceBootDone) {
+					window.__aerospaceBootDone = true;
+					try { window.dispatchEvent(new Event("aerospace:ready")); } catch (e) {}
+				}
+				reveal();
+				return;
+			}
+			if (document.querySelector("._eaglercraftX_crash_element") || window.__err) return;
+			setTimeout(waitForGame, 200);
+		})();
 	}
 
 	window.__aerospaceClient = {

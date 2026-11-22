@@ -82,7 +82,9 @@ def item_loot():
     """One-item loot tables, so the mod can give items with a short command
     (/loot give @s loot ...): chat commands are limited to 256 characters."""
     for key, item in (("rocket", items.ROCKET), ("fuel", items.FUEL), ("landing_pad", items.LANDING_PAD),
-                      ("flight_manual", items.MANUAL)):
+                      ("flight_manual", items.MANUAL), ("space_helmet", items.SPACE_HELMET),
+                      ("space_chestplate", items.SPACE_CHESTPLATE), ("space_leggings", items.SPACE_LEGGINGS),
+                      ("space_boots", items.SPACE_BOOTS)):
         write_json("data/minecraft/loot_table/aerospace/item/%s.json" % key, {
             "type": "minecraft:chest",
             "pools": [{"entries": [{"type": "minecraft:item", "name": item["id"], "weight": 1,

@@ -1,0 +1,40 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:iron_leggings",
+          "weight": 1,
+          "modifier": {
+            "type": "minecraft:set_components",
+            "components": {
+              "minecraft:item_name": {
+                "translate": "item.minecraft.aerospace_space_leggings"
+              },
+              "minecraft:item_model": "minecraft:aerospace_space_leggings",
+              "minecraft:equippable": {
+                "slot": "legs",
+                "asset_id": "minecraft:aerospace_space_suit",
+                "equip_sound": "minecraft:item.armor.equip_iron"
+              },
+              "minecraft:lore": [
+                {
+                  "translate": "item.minecraft.aerospace_space_leggings.lore.0",
+                  "color": "gray",
+                  "italic": false
+                }
+              ],
+              "minecraft:custom_data": {
+                "aerospace_item": "space_suit"
+              }
+            }
+          }
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "minecraft:aerospace/item/space_leggings"
+}
