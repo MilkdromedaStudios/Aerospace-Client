@@ -27,6 +27,9 @@
           },
           {
             "translate": "book.aerospace.manual.page4"
+          },
+          {
+            "translate": "book.aerospace.manual.page5"
           }
         ],
         "resolved": true

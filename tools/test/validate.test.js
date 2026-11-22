@@ -32,7 +32,7 @@ const EXPANSION_FILES = [
   "data/minecraft/dimension/moon.json",
   "data/minecraft/dimension_type/moon.json",
   "data/minecraft/worldgen/noise_settings/mars.json",
-  "data/minecraft/dialog/aerospace/mission_control.json",
+  "data/minecraft/structure/aerospace/landing_pad.nbt",
   "assets/minecraft/items/aerospace_rocket.json",
   "data/minecraft/advancement/aerospace/root.json",
 ];
@@ -61,7 +61,17 @@ const textEdit = (from, to) => (buf) => {
   if (!text.includes(from)) throw new Error("mutation anchor not found: " + from);
   return Buffer.from(text.replace(from, to));
 };
-const button = (command) => jsonEdit((o) => { o.actions[0].action.command = command; });
+// a test-only dialog: the shipped pack has none, but the validator still checks dialogs and their commands
+const DIALOG = D + "dialog/aerospace/test.json";
+const dialog = (fn) => () => {
+  const d = {
+    type: "minecraft:multi_action", title: { translate: "item.minecraft.aerospace_rocket" },
+    actions: [{ label: { translate: "item.minecraft.aerospace_fuel" }, width: 150,
+      action: { type: "minecraft:run_command", command: "/execute in minecraft:moon run spreadplayers ~ ~ 0 24 false @s" } }],
+  };
+  fn(d);
+  return Buffer.from(JSON.stringify(d));
+};
 
 const MUTATIONS = [
   ["placed feature typo", D + "worldgen/biome/martian_desert.json",
@@ -77,7 +87,6 @@ const MUTATIONS = [
     textEdit("aerospace/ice_vault\"", "aerospace/ice_vaults\""), "unknown structure minecraft:aerospace/ice_vaults"],
   ["dimension with an unknown type", D + "dimension/vulcan.json",
     jsonEdit((o) => { o.type = "minecraft:vulcano"; }), "unknown dimension_type minecraft:vulcano"],
-  ["unknown dialog field", D + "dialog/aerospace/mission_control.json", jsonEdit((o) => { o.colour = 1; }), "unknown dialog field"],
   ["loot item typo", D + "loot_table/chests/aerospace/ice_vault.json",
     textEdit('"minecraft:trident"', '"minecraft:tridentt"'), "unknown asset:items minecraft:tridentt"],
   ["advancement trigger typo", D + "advancement/aerospace/suit_up.json",
@@ -89,16 +98,17 @@ const MUTATIONS = [
   ["function tag", D + "tags/function/tick.json", () => Buffer.from('{"values":[]}'), "data-pack functions crash Eaglercraft 26.3"],
   ["advancement reward function", D + "advancement/aerospace/suit_up.json",
     jsonEdit((o) => { o.rewards = { function: "minecraft:x" }; }), "data-pack functions crash Eaglercraft 26.3"],
-  ["unknown command in a dialog button", D + "dialog/aerospace/mission_control.json",
-    button("/fly @s"), "unknown command fly"],
-  ["impossible block state in a dialog button", D + "dialog/aerospace/mission_control.json",
-    button("/setblock ~ ~ ~ minecraft:chest[facing=up]"), "property facing has no value up"],
-  ["unknown dimension in a dialog button", D + "dialog/aerospace/mission_control.json",
-    textEdit("in minecraft:moon run", "in minecraft:mooon run"), "unknown dimension minecraft:mooon"],
-  ["unbalanced command in a dialog button", D + "dialog/aerospace/mission_control.json",
-    textEdit('aerospace_item:\\"fuel\\"}] in minecraft:mars', 'aerospace_item:\\"fuel\\"} in minecraft:mars'), "unbalanced brackets or quotes"],
-  ["missing translation in a dialog", D + "dialog/aerospace/mission_control.json",
-    textEdit('"aerospace.mission_control.body"', '"aerospace.mission_control.bdy"'), "missing translation aerospace.mission_control.bdy"],
+  ["unknown dialog field", DIALOG, dialog((d) => { d.colour = 1; }), "unknown dialog field"],
+  ["unknown command in a dialog button", DIALOG, dialog((d) => { d.actions[0].action.command = "/fly @s"; }), "unknown command fly"],
+  ["impossible block state in a dialog button", DIALOG,
+    dialog((d) => { d.actions[0].action.command = "/setblock ~ ~ ~ minecraft:chest[facing=up]"; }), "property facing has no value up"],
+  ["unknown dimension in a dialog button", DIALOG,
+    dialog((d) => { d.actions[0].action.command = "/execute in minecraft:mooon run say hi"; }), "unknown dimension minecraft:mooon"],
+  ["unbalanced command in a dialog button", DIALOG,
+    dialog((d) => { d.actions[0].action.command = "/tellraw @s {text:\"hi\""; }), "unbalanced brackets or quotes"],
+  ["missing translation in a dialog", DIALOG, dialog((d) => { d.title.translate = "aerospace.nope"; }), "missing translation aerospace.nope"],
+  ["item model with a missing texture", D.replace("data/", "assets/") + "models/item/aerospace_fuel_3d.json",
+    jsonEdit((o) => { o.textures.can = "minecraft:block/orange_concretee"; }), "unknown ID minecraft:block/orange_concretee"],
   ["unknown item component", D + "recipe/aerospace_fuel.json",
     jsonEdit((o) => { o.result.components["minecraft:fuel_value"] = 3; }), "unknown component"],
 ];

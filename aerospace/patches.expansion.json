@@ -4,12 +4,6 @@
       "minecraft:light_gray_concrete_powder",
       "minecraft:red_sand",
       "minecraft:snow_block"
-    ],
-    "data/minecraft/tags/dialog/pause_screen_additions.json": [
-      "minecraft:aerospace/mission_control"
-    ],
-    "data/minecraft/tags/dialog/quick_actions.json": [
-      "minecraft:aerospace/mission_control"
     ]
   }
 }

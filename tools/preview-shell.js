@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 "use strict";
 /**
- * Builds a tiny stand-alone page for working on the Aerospace shell (boot
- * screen, HUD, command deck) without loading the 80 MB game.
+ * Builds a tiny stand-alone page for working on the Aerospace shell (launcher,
+ * HUD, command deck) without loading the 80 MB game.
  *
  *   node tools/preview-shell.js [--out .cache/shell-preview.html]
  *
@@ -25,7 +25,8 @@ let out = path.join(ROOT, ".cache", "shell-preview.html");
 for (let i = 2; i < process.argv.length; ++i) if (process.argv[i] === "--out") out = path.resolve(process.argv[++i]);
 
 const dataURI = (file) => "data:image/png;base64," + fs.readFileSync(path.join(SHELL, file)).toString("base64");
-const tokens = { "{{EMBLEM_DATA_URI}}": dataURI("emblem.png"), "{{GAME_VERSION}}": "26.3", "{{CLIENT_VERSION}}": pkg.version };
+const tokens = { "{{EMBLEM_DATA_URI}}": dataURI("emblem.png"), "{{GAME_VERSION}}": "26.3", "{{CLIENT_VERSION}}": pkg.version,
+  "{{PAYLOAD_MARKS}}": "[]", "{{BUNDLED_MODS}}": "[]" };
 function template(file) {
   let text = fs.readFileSync(path.join(SHELL, file), "utf8");
   for (const [k, v] of Object.entries(tokens)) text = text.split(k).join(v);
@@ -33,7 +34,8 @@ function template(file) {
 }
 
 const MOCK_GAME = `
-(function () {
+// like the real loader, the game only starts once the launcher's LAUNCH is pressed
+(window.__aerospaceLaunchGate || Promise.resolve()).then(function () {
 	"use strict";
 	var q = new URLSearchParams(location.search);
 	var fast = q.has("fast"), noRed = q.has("nored");
@@ -181,15 +183,20 @@ const MOCK_GAME = `
 		window.requestAnimationFrame(loop);       // looked up each frame, like the real game
 	}
 	window.requestAnimationFrame(loop);
-})();
+});
 `;
 
 const html = `<!DOCTYPE html>
 <html style="width:100%;height:100%;background-color:black;">
 <head>
+<meta charset="UTF-8" />
 <script type="text/javascript" id="aerospace-crashlog">
 ${template("crashlog.js")}</script>
-<meta charset="UTF-8" />
+<style id="aerospace-launcher-style">
+${template("launcher.css")}</style>
+${template("launcher.html").trimEnd()}
+<script type="text/javascript" id="aerospace-launcher">
+${template("launcher.js")}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Aerospace Client shell preview</title>
 <script>
@@ -204,9 +211,6 @@ ${template("aerospace.css")}
 <body style="position:fixed;inset:0;margin:0;width:100%;height:100%;overflow:hidden;background-color:black;">
 <div id="loading_screen"><div id="boot_status"></div></div>
 <div id="game_frame" style="position:fixed;inset:0;margin:0;width:100%;height:100%;overflow:hidden;background-color:black;"></div>
-${template("boot.html").trimEnd()}
-<script id="aerospace-boot">
-${template("boot.js")}</script>
 <script id="aerospace-shaders">
 ${template("shaders.js")}</script>
 <script id="aerospace-client">

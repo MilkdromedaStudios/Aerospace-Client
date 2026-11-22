@@ -197,8 +197,9 @@ function blockProperties(files) {
 // ----------------------------------------------------------- shape learning --
 const DISC = ["type", "condition", "function", "trigger", "element_type", "processor_type"];
 const ID_MAPS = new Set(["attributes", "components", "predicates", "spawn_costs", "spawns_by_category", "effects",
-  "properties", "dimensions", "textures"]);
-const FREE_MAPS = new Set(["criteria", "key"]);
+  "properties", "dimensions"]);
+// keys chosen by the file's author (model texture variables are free-form; their values are still checked)
+const FREE_MAPS = new Set(["criteria", "key", "textures"]);
 const NO_FUNCTIONS = "data-pack functions crash Eaglercraft 26.3: with any function in the built-in pack, " +
   "every world fails to load (\"CompletableFuture observed before completion\")";
 
