@@ -78,6 +78,11 @@ function gl(page) {
     await page.waitForFunction(() => window.__aerospaceBootDone && window.__mock.phase === "title", null, { timeout: 30000 });
     await page.waitForTimeout(800);
 
+    console.log("hud");
+    await page.waitForTimeout(1500);
+    const fpsShown = await page.$eval("#aero_w_fps b", (n) => n.textContent).catch(() => "missing");
+    check(Number(fpsShown) > 0, "FPS widget counts the frames the game presents", fpsShown);
+
     console.log("shader engine");
     let s = await gl(page);
     check(s.active, "engine attached to the present pass", s.failed || "");

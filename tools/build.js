@@ -285,6 +285,8 @@ function patchShell(shell, ctx) {
 
 
   const body = [
+    template("boot.html").trimEnd(),
+    '<script type="text/javascript" id="aerospace-boot">\n' + template("boot.js") + "</script>",
     // must run before the game creates its WebGL context (main() starts after the
     // async Wasm compile, so any script in <body> is early enough)
     '<script type="text/javascript" id="aerospace-shaders">\n' + template("shaders.js") + "</script>",

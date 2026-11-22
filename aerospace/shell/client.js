@@ -186,15 +186,23 @@
 	}
 
 	// ------------------------------------------------------------ fps probe
-	// The game presents exactly one frame per requestAnimationFrame callback, so
-	// counting the callbacks it schedules gives its real frame rate.
+	// Counts the frames the game actually puts on screen. The shader engine sees
+	// the game's one present draw per frame and reports it here; the game does not
+	// drive every frame through window.requestAnimationFrame, so counting those
+	// callbacks (the fallback, used only while the engine is not running) can
+	// read 0 in a world.
 	var frameTimes = [], lastFrameAt = 0, frameDeltas = [];
+	function recordFrame() {
+		var now = performance.now();
+		frameTimes.push(now);
+		if (frameTimes.length > 1000) frameTimes.splice(0, frameTimes.length - 1000);
+		if (lastFrameAt) { frameDeltas.push(now - lastFrameAt); if (frameDeltas.length > 120) frameDeltas.shift(); }
+		lastFrameAt = now;
+	}
+	engine.onPresent = recordFrame;
 	window.requestAnimationFrame = function (cb) {
 		return nativeRAF(function (t) {
-			var now = performance.now();
-			frameTimes.push(now);
-			if (lastFrameAt) { frameDeltas.push(now - lastFrameAt); if (frameDeltas.length > 120) frameDeltas.shift(); }
-			lastFrameAt = now;
+			if (!engine.active) recordFrame();
 			cb(t);
 		});
 	};
@@ -1004,19 +1012,8 @@
 					+ kbd(cfg.zoomKey) + " to zoom.", 9000);
 			}
 		}
-		// show the HUD once the game has drawn its first frame
-		(function waitForGame() {
-			if (window.__aerospaceBootDone || window.__eaglerGameReady === true) {
-				if (!window.__aerospaceBootDone) {
-					window.__aerospaceBootDone = true;
-					try { window.dispatchEvent(new Event("aerospace:ready")); } catch (e) {}
-				}
-				reveal();
-				return;
-			}
-			if (document.querySelector("._eaglercraftX_crash_element") || window.__err) return;
-			setTimeout(waitForGame, 200);
-		})();
+		if (window.__aerospaceBootDone) reveal();
+		else window.addEventListener("aerospace:ready", reveal, { once: true });
 	}
 
 	window.__aerospaceClient = {

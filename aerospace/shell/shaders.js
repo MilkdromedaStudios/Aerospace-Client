@@ -381,6 +381,7 @@
 
 	function afterPresent(gl) {
 		api.frames++;
+		if (typeof api.onPresent === "function") { try { api.onPresent(); } catch (e) {} }
 		var w = gl.drawingBufferWidth, h = gl.drawingBufferHeight;
 		if (S.linear) {
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
