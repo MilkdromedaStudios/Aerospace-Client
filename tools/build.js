@@ -277,11 +277,20 @@ function patchShell(shell, ctx) {
     "",
   ].join("\n");
   shell = replaceOnce(shell, "</head>", head + "</head>", "</head>");
-  // the crash log goes first in <head> so it sees everything the game prints
-  // The crash log and the bundled mod installer go first, before the game data.
+  // The crash log goes first in <head> so it sees everything the game prints,
+  // then the bundled mod installer and the pilot profile, before the game data.
   shell = replaceOnce(shell, /<head>/, '<head>\n<meta charset="utf-8" />'
     + '\n<script type="text/javascript" id="aerospace-crashlog">\n' + template("crashlog.js") + "</script>"
-    + '\n<script type="text/javascript" id="aerospace-modseed">\n' + template("modseed.js") + "</script>\n", "<head>");
+    + '\n<script type="text/javascript" id="aerospace-modseed">\n' + template("modseed.js") + "</script>"
+    + '\n<script type="text/javascript" id="aerospace-profile">\n' + template("profile.js") + "</script>\n", "<head>");
+  // First start only: the game prepares itself in the background, and its final
+  // start waits until the pilot profile is created or skipped
+  // (window.__aerospaceLaunchGate, set by profile.js; absent on later starts).
+  const GATE = /(\/\/ Let the early-load layer paint before synchronous startup\.\s*\n\s*)setTimeout\(\(\) => \{([\s\S]*?)\n(\s*)\}, 60\);/g;
+  const gateMatches = shell.match(GATE);
+  if (!gateMatches || gateMatches.length !== 1) fail("shell patch failed, anchor not found or not unique: launch gate");
+  shell = shell.replace(GATE, (m, lead, body, indent) =>
+    lead + "(window.__aerospaceLaunchGate || Promise.resolve()).then(() => setTimeout(() => {" + body + "\n" + indent + "}, 60));");
 
 
   const body = [
