@@ -2,7 +2,7 @@
 
 A space-themed browser client built on **Eaglercraft 26.3** (zeus/master).
 
-Aerospace Client takes the stock single-file Eaglercraft 26.3 build and turns it into its own client: new boot screen, new title screen and panorama, a restyled interface, client mods, shader looks, a HUD, a crash log, and the **Space Expansion**: rockets, fuel, five new worlds to fly to, and dungeons with bosses. The game code itself (the three WebAssembly images) is passed through byte-for-byte.
+Aerospace Client takes the stock single-file Eaglercraft 26.3 build and turns it into its own client: new boot screen, new title screen and panorama, a restyled interface, client mods, shader looks, a HUD, a crash log, a launcher, and the **Space Expansion** Lua mod: placeable 3D rockets, landing pads, fuel, five new worlds with their own gravity, and dungeons with bosses. The game code itself (the three WebAssembly images) is passed through byte-for-byte.
 
 ## Play
 
@@ -30,40 +30,53 @@ All three keys can be rebound in the command deck.
 
 Eaglercraft 26.3 has its own mod loader for `.zip` and `.lua` mods, and Aerospace keeps it unchanged: on the title screen, **Mods** is the button to the right of **Options**. Those mods run in singleplayer only (the game pauses them on servers). Mods are stored per website, so mods you installed on another Eaglercraft site do not appear in Aerospace until you export them there (Mods → pick a mod → Export .zip) and import them here.
 
+## Launcher
+
+Opening the page shows the Aerospace launcher straight away, while the browser is still reading the ~77 MB game file. The game decodes and compiles itself in the background, so by the time you press **LAUNCH** it is usually ready ("GAME DATA: prepared · launches instantly") and starts within seconds.
+
+- **LAUNCH**: the launch switch, your call sign (it becomes your in-game username) and a systems check with values read from your device: WebGL, memory hint, screen, CPU threads, connection, storage and how far the game data has got
+- **SERVERS**: keep server addresses and copy them for Multiplayer Fleet
+- **SETTINGS**: launcher sounds, ambient drone, starfield density, reduced motion, skip the boot animation, FPS counter
+- **ABOUT**: version and credits
+
+The menu works with the keyboard (arrows, Enter, Escape), touch and a mouse, and stacks into a bottom bar on phones. Loading shows the game's real stages, the time taken and, after 20 seconds, a "still working" note; if launching fails it shows the error with Retry and a button to open another copy of the game file. On LAUNCH the menu removes itself completely, and the loading screen goes once the game is on screen.
+
 ## Space Expansion
 
-The expansion is built into the game's own data pack, so it is on in every singleplayer world (and in worlds you share over LAN). Servers run their own data packs, so it does not apply there. When you create a world the game warns that it uses experimental settings: that is because of the extra worlds, and it is safe to choose **Yes**. To build without it (the plain base game plus the client), run `node tools/build.js --disable-space-expansion`.
+The expansion is the **Aerospace Lua mod**, installed and enabled the first time Aerospace Client starts, together with the game data it uses (worlds, items, recipes, dungeons). It is in the game's Mods screen (title screen → Mods), where you can disable or delete it; a deleted mod is not reinstalled. Lua mods run in singleplayer (and LAN worlds you host).
 
-**Getting started.** The first time you join a world you get the **Flight Manual**, which covers all of this. You can also craft it from a book and a firework rocket.
+**Rockets and flights need cheats allowed in the world** (Allow Cheats when you create it, or Open to LAN with cheats on): placing pads, moving fuel, travel and gravity are done with game commands. When you create a world the game warns that it uses experimental settings because of the extra worlds; choose **Yes** (or "I Know What I'm Doing" when reopening it).
 
 | Item | Recipe |
 | --- | --- |
-| Rocket Fuel (×2) | Copper ingot, 2 coal or charcoal, gunpowder, blaze powder (shapeless) |
+| Landing Pad | Yellow concrete, black concrete, yellow concrete; smooth stone, redstone lamp, smooth stone; 3 smooth stone |
 | Rocket | Lightning rod on top; iron block, glass, iron block; iron block, blast furnace, iron block |
-| Space Helmet | 5 iron ingots around tinted glass, like a helmet |
-| Space Suit, Leggings, Boots | Iron ingots and white wool, in the usual armour shapes |
+| Rocket Fuel (×2) | Copper ingot, 2 coal or charcoal, gunpowder, blaze powder (shapeless) |
+| Space Helmet, Suit, Leggings, Boots | Iron ingots with tinted glass (helmet) or white wool |
 
-**Flying.** Open the pause menu and choose **Aerospace Mission Control** (it is also on the Quick Actions key), then pick a world. You need a Rocket and Rocket Fuel in your inventory, and the world needs **cheats allowed**: turn on *Allow Cheats* when you create it, or use *Open to LAN* with cheats on. The game asks you to confirm the flight command: choose **Run Command**. You land near the same X and Z on the destination. Pick Earth to fly home.
+1. **Build a pad**: right click the ground with a Landing Pad.
+2. **Place the rocket**: right click the middle of the pad with the Rocket. It stands there as a 3D model.
+3. **Fuel and launch**: right click the rocket to open its panel: load Rocket Fuel (up to 8), pick a world, and watch the countdown and liftoff. Trips cost 1 to 4 fuel.
+4. **Arrive**: you land on a new pad with your rocket and the fuel that is left, so you can fly on or home. "Pick up the rocket" in the panel gives back the rocket and its fuel.
 
-| Destination | What is there |
-| --- | --- |
-| Asteroid Belt | Floating rocks full of ore under a black sky, and derelict space stations |
-| The Moon | Grey regolith and basalt seas under a black, starry sky, Moon Cows and Lunar Outposts |
-| Mars | Red deserts and canyons, Mars Pigs and ancient step pyramids |
-| Glacio | Ice spikes, frozen seas, Glacio Chickens and Ice Vaults |
-| Vulcan | Lava seas and basalt deltas, blazes and wither skeletons, and Magma Forges. Bring fire resistance |
+| World | Gravity | Air | What is there |
+| --- | --- | --- | --- |
+| Asteroid Belt | 1/10 | no | Floating rock full of ore under a black sky, derelict stations |
+| The Moon | 1/6 | no | Grey regolith and basalt seas, Moon Cows, Lunar Outposts |
+| Mars | 0.38 | yes | Red deserts and canyons, Mars Pigs, step pyramids |
+| Glacio | 3/4 | yes | Ice spikes, frozen seas, Glacio Chickens, Ice Vaults |
+| Vulcan | 1.25× | yes | Lava seas and basalt deltas, Magma Forges (bring fire resistance) |
 
-**Dungeons.** Each world has its own structure with a monster spawner, loot chests and a named boss: the Outpost Overseer (Moon), the Martian Warlord (Mars), the Frost Lich (Glacio), the Magma Tyrant (Vulcan) and the Station Warden (Asteroid Belt). Their guards are Lost Astronauts, Martians, Frost Wraiths and Magma Knights. Bosses can drop their weapon. Crashed rockets on Earth hide fuel, a Flight Manual and sometimes a Rocket.
+**Gravity** changes how high you jump and how far you can fall safely. **Oxygen**: on the Moon and in the Asteroid Belt you have 30 seconds of air without a Space Helmet (the HUD shows it). Both can be turned off in the mod's settings.
 
-**Advancements.** 16 new ones in the Aerospace Program tab, from Fuel Up and We Have Liftoff to visiting every world (Grand Tour) and finding each dungeon.
+**Dungeons** appear more often than before: each world has ruins with a spawner, loot and a named boss (Outpost Overseer, Martian Warlord, Frost Lich, Magma Tyrant, Station Warden), and crashed rockets on Earth hide fuel and sometimes a Rocket. **Advancements**: 16 in the Aerospace Program tab. Type `/aerospace` in chat for help and status.
 
-Existing worlds get the new worlds as well. Crashed rockets only appear in parts of Earth you have not explored yet.
-
-**Why no gravity, oxygen or rocket countdown?** Those need data-pack functions, and this Eaglercraft build cannot load them: with even one function in the game's data pack, every world fails to load. Version 2.0.0 shipped with functions and crashed for that reason; 2.0.1 removes them, and the build now refuses any function file.
+**Also bundled**: the Sodium and Lithium Lua ports by UserArham (latest releases, see `aerospace/mods/vendor/`), installed and enabled the same way. Each shows its own performance panel; they can be disabled in the Mods screen.
 
 ## What is different from stock Eaglercraft 26.3
 
 **Shell**
+- The launcher (see above), shown while the game data loads, with the game prepared in the background
 - Aerospace boot screen with a starfield, progress bar and rotating tips, replacing the stock splash and the red loading screen
 - New page title, icon, crash and rotate-device screens
 
@@ -139,7 +152,9 @@ Other commands:
 | `aerospace/overlay/` | Files copied over the game's assets, using the same relative paths (`assets/...`, `data/...`) |
 | `aerospace/lang/en_us*.json` | Language strings merged into the game's language file (`en_us.expansion.json` is generated by `tools/expansion/`) |
 | `aerospace/patches*.json` | JSON merges and tag additions |
-| `aerospace/shell/` | Boot screen, stylesheet, crash log (`crashlog.js`), shader engine (`shaders.js`) and the client layer (`client.js`) |
+| `aerospace/shell/` | Launcher (`launcher.*`), bundled mod installer (`modseed.js`), crash log (`crashlog.js`), shader engine (`shaders.js`), client layer (`client.js`) and stylesheet |
+| `aerospace/mods/aerospace/` | The Aerospace Lua mod (`main.lua`; `items.lua` is generated) |
+| `aerospace/mods/vendor/` | Bundled third-party Lua mods with their licences |
 | `tools/art/` | Procedural art generator |
 | `tools/content/` | Generator for the data-driven content |
 | `tools/expansion/` | Generator for the Space Expansion. It starts every world-generation file from the matching stock 26.3 file, so the formats match the game |

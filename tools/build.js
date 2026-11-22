@@ -23,6 +23,7 @@ const { readEPK, writeEPK } = require("./lib/epk");
 const sf = require("./lib/singlefile");
 const { resolveUpstream } = require("./lib/upstream");
 const { validate } = require("./lib/validate");
+const { buildMods } = require("./lib/mods");
 
 const ROOT = path.resolve(__dirname, "..");
 const AERO = path.join(ROOT, "aerospace");
@@ -238,7 +239,11 @@ function patchShell(shell, ctx) {
   ctx.gameVersion = version;
 
   const dataURI = (file) => "data:image/png;base64," + fs.readFileSync(path.join(AERO, "shell", file)).toString("base64");
+  const mods = ctx.spaceExpansion === false ? [] : buildMods(AERO);
+  ctx.mods = mods.map((m) => `${m.name} ${m.version}`);
   const tokens = {
+    "{{PAYLOAD_MARKS}}": JSON.stringify(ctx.payloadMarks || []),
+    "{{BUNDLED_MODS}}": JSON.stringify(mods.map((m) => ({ id: m.id, name: m.name, version: m.version, zip: m.zip.toString("base64") }))),
     "{{EMBLEM_DATA_URI}}": dataURI("emblem.png"),
     "{{GAME_VERSION}}": version,
     "{{CLIENT_VERSION}}": pkg.version,
@@ -274,12 +279,23 @@ function patchShell(shell, ctx) {
   ].join("\n");
   shell = replaceOnce(shell, "</head>", head + "</head>", "</head>");
   // the crash log goes first in <head> so it sees everything the game prints
-  shell = replaceOnce(shell, /<head>/, '<head>\n<script type="text/javascript" id="aerospace-crashlog">\n' + template("crashlog.js") + "</script>",
-    "<head>");
+  // The crash log and mod installer go first. The launcher follows straight
+  // away, before the ~75 MB of game data: its markup starts the page body, so
+  // the browser paints the launcher while the rest of the file is still arriving.
+  shell = replaceOnce(shell, /<head>/, '<head>\n<meta charset="utf-8" />'
+    + '\n<script type="text/javascript" id="aerospace-crashlog">\n' + template("crashlog.js") + "</script>"
+    + '\n<script type="text/javascript" id="aerospace-modseed">\n' + template("modseed.js") + "</script>"
+    + '\n<style id="aerospace-launcher-style">\n' + template("launcher.css") + "</style>\n"
+    + template("launcher.html").trimEnd()
+    + '\n<script type="text/javascript" id="aerospace-launcher">\n' + template("launcher.js") + "</script>\n", "<head>");
+  // The game prepares itself in the background; only its start waits for LAUNCH.
+  const GATE = /(\/\/ Let the early-load layer paint before synchronous startup\.\s*\n\s*)setTimeout\(\(\) => \{([\s\S]*?)\n(\s*)\}, 60\);/g;
+  const gateMatches = shell.match(GATE);
+  if (!gateMatches || gateMatches.length !== 1) fail("shell patch failed, anchor not found or not unique: launch gate");
+  shell = shell.replace(GATE, (m, lead, body, indent) =>
+    lead + "(window.__aerospaceLaunchGate || Promise.resolve()).then(() => setTimeout(() => {" + body + "\n" + indent + "}, 60));");
 
   const body = [
-    template("boot.html").trimEnd(),
-    '<script type="text/javascript" id="aerospace-boot">\n' + template("boot.js") + "</script>",
     // must run before the game creates its WebGL context (main() starts after the
     // async Wasm compile, so any script in <body> is early enough)
     '<script type="text/javascript" id="aerospace-shaders">\n' + template("shaders.js") + "</script>",
@@ -318,6 +334,9 @@ async function main() {
   payloads.set("eag-inline-assets", sf.encodePayload(packed));
 
   const ctx = {
+    spaceExpansion: args.spaceExpansion,
+    payloadMarks: ["eag-inline-decoder", "eag-inline-wasm-br", "eag-inline-mesh-wasm-br", "eag-inline-server-wasm-br",
+      "eag-inline-assets", "eag-inline-sounds"].map((id) => ({ id, bytes: payloads.get(id).text.length })),
     oldAssetsSize: assetsBytes.length,
     newAssetsSize: packed.length,
     soundsSize: payloads.get("eag-inline-sounds").size,
@@ -329,6 +348,7 @@ async function main() {
   const outBytes = Buffer.from(out, "latin1");
   fs.writeFileSync(args.out, outBytes);
   const sha = crypto.createHash("sha256").update(outBytes).digest("hex");
+  if (ctx.mods && ctx.mods.length) log("bundled mods: " + ctx.mods.join(", "));
   log(`wrote ${path.relative(ROOT, args.out)}  (${(outBytes.length / 1048576).toFixed(1)} MB, game ${ctx.gameVersion}, client ${pkg.version})`);
   log("sha256 " + sha);
 }

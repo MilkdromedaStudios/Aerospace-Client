@@ -1,62 +1,15 @@
-"""Mission Control, advancements and the welcome gift, without data-pack functions.
+"""Advancements and the welcome gift.
 
-Eaglercraft 26.3 cannot load data-pack functions: a single .mcfunction file
-in the pack makes every world fail to load ("CompletableFuture observed before
-completion"). So nothing here may rely on functions, function tags or
-advancement reward functions; tools/lib/validate.js rejects them.
-
-Travel therefore runs one command straight from the Mission Control buttons.
-Changing dimension needs operator commands, so it works in worlds with cheats
-allowed. The command checks for a Rocket and Rocket Fuel in the inventory; a
-single command cannot also use the fuel up.
+Rockets, fuel, launches, landing pads and gravity are run by the Aerospace Lua
+mod (aerospace/mods/aerospace). This data must not use data-pack functions:
+Eaglercraft 26.3 fails to load every world when the built-in pack contains one
+("CompletableFuture observed before completion"); tools/lib/validate.js
+rejects them.
 """
-from common import tr, lang, mc, write_json
+from common import tr, mc, write_json
 import items
-from planets import PLANETS, EARTH
+from planets import PLANETS
 
-HAS = 'minecraft:custom_data~{aerospace_item:"%s"}'
-DESTS = [EARTH] + PLANETS
-
-
-def travel_command(d):
-    spread = "spreadplayers ~ ~ 0 %d %sfalse @s" % (64 if d["id"] in ("vulcan", "asteroid_belt") else 24,
-                                                   "under 200 " if d["id"] == "asteroid_belt" else "")
-    return "execute if items entity @s container.* *[%s] if items entity @s container.* *[%s] in %s run %s" % (
-        HAS % "rocket", HAS % "fuel", mc(d["id"]), spread)
-
-
-def dialog():
-    lang("aerospace.mission_control.title", "Mission Control")
-    actions = []
-    for d in DESTS:
-        label_key = "aerospace.dest." + d["id"]
-        lang(label_key, d["name"])
-        cmd = travel_command(d)
-        if len(cmd) > 256:
-            raise SystemExit("travel command too long for a chat command: " + cmd)
-        actions.append({
-            "label": {"translate": label_key},
-            "tooltip": {"translate": "aerospace.dest.%s.tooltip" % d["id"]},
-            "width": 150,
-            "action": {"type": "minecraft:run_command", "command": "/" + cmd},
-        })
-        lang("aerospace.dest.%s.tooltip" % d["id"], d.get("arrive", "Return home to Earth."))
-    write_json("data/minecraft/dialog/aerospace/mission_control.json", {
-        "type": "minecraft:multi_action",
-        "title": {"translate": "aerospace.mission_control.title", "color": "aqua", "bold": True},
-        "external_title": tr("aerospace.mission_control.external", "Aerospace Mission Control"),
-        "body": [{"type": "minecraft:plain_message", "width": 300, "contents": tr(
-            "aerospace.mission_control.body",
-            "Choose a destination. You need a Rocket and Rocket Fuel in your inventory. "
-            "Flights need cheats allowed in this world (set it when creating the world, or Open to LAN with "
-            "Allow Cheats on).")}],
-        "actions": actions,
-        "exit_action": {"label": {"translate": "gui.cancel"}, "width": 150},
-        "columns": 2,
-        "can_close_with_escape": True,
-        "pause": True,
-        "after_action": "close",
-    })
 
 
 def welcome_loot():
@@ -101,7 +54,7 @@ def advancements():
         inv("space_helmet", "minecraft:iron_helmet"))
     arrive = lambda p: {"conditions": {"to": mc(p["id"])}, "trigger": "minecraft:changed_dimension"}
     # leaving Earth for any world counts as the first launch
-    adv("liftoff", "rocket_builder", "We Have Liftoff", "Fly to another world with Mission Control",
+    adv("liftoff", "rocket_builder", "We Have Liftoff", "Fuel a Rocket and fly to another world",
         {"id": "minecraft:firework_rocket"}, {p["id"]: arrive(p) for p in PLANETS}, frame="goal", xp=20,
         requirements=[[p["id"] for p in PLANETS]])
     icons = {"asteroid_belt": "minecraft:tuff", "moon": "minecraft:light_gray_concrete_powder",
@@ -125,7 +78,21 @@ def advancements():
                        "trigger": "minecraft:location"}}, frame="goal")
 
 
+def item_loot():
+    """One-item loot tables, so the mod can give items with a short command
+    (/loot give @s loot ...): chat commands are limited to 256 characters."""
+    for key, item in (("rocket", items.ROCKET), ("fuel", items.FUEL), ("landing_pad", items.LANDING_PAD),
+                      ("flight_manual", items.MANUAL)):
+        write_json("data/minecraft/loot_table/aerospace/item/%s.json" % key, {
+            "type": "minecraft:chest",
+            "pools": [{"entries": [{"type": "minecraft:item", "name": item["id"], "weight": 1,
+                                    "modifier": {"type": "minecraft:set_components", "components": item["components"]}}],
+                       "rolls": 1.0}],
+            "random_sequence": "minecraft:aerospace/item/" + key,
+        })
+
+
 def generate():
-    dialog()
     welcome_loot()
+    item_loot()
     advancements()

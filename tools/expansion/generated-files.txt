@@ -3,13 +3,17 @@ assets/minecraft/equipment/aerospace_magma.json
 assets/minecraft/equipment/aerospace_martian.json
 assets/minecraft/equipment/aerospace_space_suit.json
 assets/minecraft/items/aerospace_fuel.json
+assets/minecraft/items/aerospace_landing_pad.json
 assets/minecraft/items/aerospace_rocket.json
 assets/minecraft/items/aerospace_space_boots.json
 assets/minecraft/items/aerospace_space_chestplate.json
 assets/minecraft/items/aerospace_space_helmet.json
 assets/minecraft/items/aerospace_space_leggings.json
 assets/minecraft/models/item/aerospace_fuel.json
+assets/minecraft/models/item/aerospace_fuel_3d.json
+assets/minecraft/models/item/aerospace_landing_pad.json
 assets/minecraft/models/item/aerospace_rocket.json
+assets/minecraft/models/item/aerospace_rocket_3d.json
 assets/minecraft/models/item/aerospace_space_boots.json
 assets/minecraft/models/item/aerospace_space_chestplate.json
 assets/minecraft/models/item/aerospace_space_helmet.json
@@ -29,6 +33,7 @@ assets/minecraft/textures/entity/equipment/humanoid_leggings/aerospace_space_sui
 assets/minecraft/textures/entity/pig/pig_mars.png
 assets/minecraft/textures/entity/pig/pig_mars_baby.png
 assets/minecraft/textures/item/aerospace_fuel.png
+assets/minecraft/textures/item/aerospace_landing_pad.png
 assets/minecraft/textures/item/aerospace_rocket.png
 assets/minecraft/textures/item/aerospace_space_boots.png
 assets/minecraft/textures/item/aerospace_space_chestplate.png
@@ -52,6 +57,7 @@ data/minecraft/advancement/aerospace/visit_moon.json
 data/minecraft/advancement/aerospace/visit_vulcan.json
 data/minecraft/advancement/recipes/misc/aerospace_flight_manual.json
 data/minecraft/advancement/recipes/misc/aerospace_fuel.json
+data/minecraft/advancement/recipes/misc/aerospace_landing_pad.json
 data/minecraft/advancement/recipes/misc/aerospace_rocket.json
 data/minecraft/advancement/recipes/misc/aerospace_space_boots.json
 data/minecraft/advancement/recipes/misc/aerospace_space_chestplate.json
@@ -59,7 +65,6 @@ data/minecraft/advancement/recipes/misc/aerospace_space_helmet.json
 data/minecraft/advancement/recipes/misc/aerospace_space_leggings.json
 data/minecraft/chicken_variant/glacio.json
 data/minecraft/cow_variant/moon.json
-data/minecraft/dialog/aerospace/mission_control.json
 data/minecraft/dimension/asteroid_belt.json
 data/minecraft/dimension/glacio.json
 data/minecraft/dimension/mars.json
@@ -70,6 +75,10 @@ data/minecraft/dimension_type/glacio.json
 data/minecraft/dimension_type/mars.json
 data/minecraft/dimension_type/moon.json
 data/minecraft/dimension_type/vulcan.json
+data/minecraft/loot_table/aerospace/item/flight_manual.json
+data/minecraft/loot_table/aerospace/item/fuel.json
+data/minecraft/loot_table/aerospace/item/landing_pad.json
+data/minecraft/loot_table/aerospace/item/rocket.json
 data/minecraft/loot_table/aerospace/welcome.json
 data/minecraft/loot_table/chests/aerospace/crash_site.json
 data/minecraft/loot_table/chests/aerospace/derelict_station.json
@@ -80,6 +89,7 @@ data/minecraft/loot_table/chests/aerospace/martian_ruins.json
 data/minecraft/pig_variant/mars.json
 data/minecraft/recipe/aerospace_flight_manual.json
 data/minecraft/recipe/aerospace_fuel.json
+data/minecraft/recipe/aerospace_landing_pad.json
 data/minecraft/recipe/aerospace_rocket.json
 data/minecraft/recipe/aerospace_space_boots.json
 data/minecraft/recipe/aerospace_space_chestplate.json
@@ -88,6 +98,7 @@ data/minecraft/recipe/aerospace_space_leggings.json
 data/minecraft/structure/aerospace/crash_site.nbt
 data/minecraft/structure/aerospace/derelict_station.nbt
 data/minecraft/structure/aerospace/ice_vault.nbt
+data/minecraft/structure/aerospace/landing_pad.nbt
 data/minecraft/structure/aerospace/lunar_outpost.nbt
 data/minecraft/structure/aerospace/magma_forge.nbt
 data/minecraft/structure/aerospace/martian_ruins.nbt

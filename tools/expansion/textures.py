@@ -111,6 +111,26 @@ def icon_fuel():
     return c.image()
 
 
+def icon_landing_pad():
+    c = Canvas(16, 16)
+    yel, blk, grey, grey_d, lamp, outline = (hexc("#ffd23f"), hexc("#1b1b22"), hexc("#9aa4b4"), hexc("#5d6675"),
+                                             hexc("#7df9ff"), hexc("#111118"))
+    # a pad seen at an angle: hazard ring, grey deck, beacon light in the middle
+    c.rect(1, 5, 15, 13, outline)
+    c.rect(2, 6, 14, 12, yel)
+    for x in range(2, 14, 2):
+        c.px(x, 6, blk)
+        c.px(x + 1, 11, blk)
+    for y in range(6, 12, 2):
+        c.px(2, y + 1, blk)
+        c.px(13, y, blk)
+    c.rect(3, 7, 13, 11, grey)
+    c.rect(3, 10, 13, 11, grey_d)
+    c.rect(7, 8, 9, 10, lamp)
+    c.rect(2, 13, 14, 14, shade(outline, 1.6))
+    return c.image()
+
+
 def _armor_icon(kind):
     c = Canvas(16, 16)
     white, grey, dark, orange, visor, gold = (hexc("#eef1f6"), hexc("#b9c1cd"), hexc("#596273"), hexc("#ff8a3d"),
@@ -351,6 +371,7 @@ def variant_texture(vanilla_rel, variant):
 def generate():
     save("assets/minecraft/textures/item/aerospace_rocket.png", icon_rocket())
     save("assets/minecraft/textures/item/aerospace_fuel.png", icon_fuel())
+    save("assets/minecraft/textures/item/aerospace_landing_pad.png", icon_landing_pad())
     for kind in ("helmet", "chestplate", "leggings", "boots"):
         save("assets/minecraft/textures/item/aerospace_space_%s.png" % kind, _armor_icon(kind))
     for name in SUITS:

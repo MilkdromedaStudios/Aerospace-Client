@@ -1,0 +1,42 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:firework_star",
+          "weight": 1,
+          "modifier": {
+            "type": "minecraft:set_components",
+            "components": {
+              "minecraft:item_name": {
+                "translate": "item.minecraft.aerospace_rocket"
+              },
+              "minecraft:item_model": "minecraft:aerospace_rocket",
+              "minecraft:max_stack_size": 1,
+              "minecraft:rarity": "rare",
+              "minecraft:lore": [
+                {
+                  "translate": "item.minecraft.aerospace_rocket.lore.0",
+                  "color": "gray",
+                  "italic": false
+                },
+                {
+                  "translate": "item.minecraft.aerospace_rocket.lore.1",
+                  "color": "gray",
+                  "italic": false
+                }
+              ],
+              "minecraft:custom_data": {
+                "aerospace_item": "rocket"
+              }
+            }
+          }
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "minecraft:aerospace/item/rocket"
+}

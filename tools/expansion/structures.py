@@ -376,20 +376,36 @@ def derelict_station():
     return b
 
 
+def landing_pad():
+    """5x5 pad: hazard ring, grey deck, a polished blackstone centre the rocket stands on.
+    The Lua mod places it with /place template and finds rockets' pads by this pattern."""
+    b = Build(5, 4, 5, 7)
+    b.fill(0, 1, 0, 4, 3, 4, "minecraft:air")
+    for x in range(5):
+        for z in range(5):
+            ring = x in (0, 4) or z in (0, 4)
+            b.set(x, 0, z, ("minecraft:yellow_concrete" if (x + z) % 2 == 0 else "minecraft:black_concrete") if ring
+                  else "minecraft:light_gray_concrete")
+    b.set(2, 0, 2, "minecraft:polished_blackstone")
+    for (x, z) in ((0, 0), (4, 0), (0, 4), (4, 4)):
+        b.set(x, 0, z, "minecraft:redstone_lamp", {"lit": "true"})
+    return b
+
+
 DUNGEONS = [
     # id, builder, biomes, heightmap or None (absolute y), start y, step, adaptation, spacing, separation, salt
     ("aerospace_crash_site", crash_site, ["#minecraft:is_overworld"], "OCEAN_FLOOR_WG", -1, "surface_structures",
-     "beard_thin", 36, 12, 61127301, "Crash Site"),
+     "beard_thin", 22, 7, 61127301, "Crash Site"),
     ("lunar_outpost", lunar_outpost, ["minecraft:lunar_highlands"], "WORLD_SURFACE_WG", -4, "surface_structures",
-     "beard_thin", 18, 6, 61127302, "Lunar Outpost"),
+     "beard_thin", 9, 3, 61127302, "Lunar Outpost"),
     ("martian_ruins", martian_ruins, ["minecraft:martian_desert"], "WORLD_SURFACE_WG", -3, "surface_structures",
-     "beard_thin", 18, 6, 61127303, "Martian Ruins"),
+     "beard_thin", 9, 3, 61127303, "Martian Ruins"),
     ("ice_vault", ice_vault, ["minecraft:glacio_tundra"], "WORLD_SURFACE_WG", -2, "surface_structures",
-     "beard_thin", 18, 6, 61127304, "Ice Vault"),
+     "beard_thin", 9, 3, 61127304, "Ice Vault"),
     ("magma_forge", magma_forge, ["minecraft:vulcan_wastes"], "WORLD_SURFACE_WG", -1, "surface_structures",
-     "beard_thin", 18, 6, 61127305, "Magma Forge"),
+     "beard_thin", 9, 3, 61127305, "Magma Forge"),
     ("derelict_station", derelict_station, ["minecraft:asteroid_field"], None, 120, "surface_structures",
-     "none", 14, 5, 61127306, "Derelict Station"),
+     "none", 8, 3, 61127306, "Derelict Station"),
 ]
 
 
@@ -466,6 +482,7 @@ def loot():
 # --------------------------------------------------------------- worldgen --
 def generate():
     loot()
+    write_bytes("data/minecraft/structure/aerospace/landing_pad.nbt", landing_pad().to_nbt())
     for (sid, builder, biomes, heightmap, y, step, adapt, spacing, separation, salt, title) in DUNGEONS:
         tpl = "aerospace/" + sid.replace("aerospace_", "")
         write_bytes("data/minecraft/structure/%s.nbt" % tpl, builder().to_nbt())

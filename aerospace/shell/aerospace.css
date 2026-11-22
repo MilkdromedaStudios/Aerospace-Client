@@ -13,102 +13,8 @@
 	--aero-ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
-/* The upstream splash is replaced by #aero_boot; keep its node for the loader's bookkeeping. */
+/* The upstream splash is replaced by the launcher (launcher.css); keep its node for the loader's bookkeeping. */
 #loading_screen { display: none !important; }
-
-/* ------------------------------------------------------------ boot screen */
-#aero_boot {
-	position: fixed;
-	inset: 0;
-	z-index: 2147483646;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	overflow: hidden;
-	background: radial-gradient(120% 90% at 50% 110%, #16245a 0%, var(--aero-bg1) 42%, var(--aero-bg0) 100%);
-	color: var(--aero-text);
-	font-family: var(--aero-ui);
-	user-select: none;
-	-webkit-user-select: none;
-	transition: opacity 520ms ease;
-}
-#aero_boot.is-leaving { opacity: 0; pointer-events: none; }
-#aero_boot_stars { position: absolute; inset: 0; width: 100%; height: 100%; }
-#aero_boot::after {	/* horizon glow */
-	content: "";
-	position: absolute;
-	left: -20%;
-	right: -20%;
-	bottom: -62vmin;
-	height: 80vmin;
-	border-radius: 50%;
-	background: radial-gradient(closest-side, rgba(63, 208, 255, .0) 93%, rgba(63, 208, 255, .55) 97.5%, rgba(63, 208, 255, 0) 100%),
-		radial-gradient(closest-side, #060b1c 96%, transparent 97%);
-	pointer-events: none;
-}
-.aero-boot-core {
-	position: relative;
-	z-index: 1;
-	width: min(560px, 86vw);
-	text-align: center;
-}
-.aero-boot-emblem {
-	width: clamp(84px, 22vmin, 168px);
-	height: auto;
-	filter: drop-shadow(0 0 26px rgba(63, 208, 255, .45));
-	animation: aero-float 6s ease-in-out infinite;
-}
-.aero-boot-word {
-	margin-top: 14px;
-	font: 800 clamp(28px, 7.4vmin, 58px)/1 var(--aero-ui);
-	letter-spacing: .26em;
-	text-indent: .26em;
-	background: linear-gradient(180deg, #ffffff 8%, var(--aero-accent) 58%, #3a6ee8 100%);
-	-webkit-background-clip: text;
-	background-clip: text;
-	color: transparent;
-}
-.aero-boot-sub {
-	margin-top: 10px;
-	font: 600 clamp(11px, 2.1vmin, 14px)/1 var(--aero-font);
-	letter-spacing: .42em;
-	text-indent: .42em;
-	color: var(--aero-dim);
-}
-.aero-boot-bar {
-	position: relative;
-	height: 6px;
-	margin: 30px auto 0;
-	width: min(420px, 78vw);
-	border: 1px solid var(--aero-line);
-	border-radius: 4px;
-	background: rgba(4, 8, 20, .7);
-	overflow: hidden;
-}
-#aero_boot_fill {
-	position: absolute;
-	inset: 0 auto 0 0;
-	width: 0%;
-	background: linear-gradient(90deg, #2a6be0, var(--aero-accent) 70%, #fff);
-	box-shadow: 0 0 14px var(--aero-accent);
-	transition: width 380ms ease-out;
-}
-#aero_boot.is-holding #aero_boot_fill { animation: aero-pulse 1.1s ease-in-out infinite; }
-#aero_boot_status {
-	margin-top: 14px;
-	min-height: 1.4em;
-	font: 13px/1.4 var(--aero-font);
-	color: var(--aero-text);
-}
-#aero_boot_tip {
-	margin-top: 22px;
-	min-height: 2.8em;
-	font: 12px/1.4 var(--aero-ui);
-	color: var(--aero-dim);
-	transition: opacity 300ms ease;
-}
-@keyframes aero-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
-@keyframes aero-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }
 
 /* Loader crash panel + "rotate your device" notice, restyled */
 ._eaglercraftX_crash_element { background: var(--aero-bg0) !important; color: var(--aero-text) !important; }
@@ -409,8 +315,7 @@
 .aero-custom[hidden] { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
-	#aero_boot, .aero-toast, #aero_boot_fill, #game_frame.aero-zooming { transition: none; }
-	.aero-boot-emblem, #aero_boot.is-holding #aero_boot_fill { animation: none; }
+	.aero-toast, #game_frame.aero-zooming { transition: none; }
 }
 
 .aero-crash-summary {

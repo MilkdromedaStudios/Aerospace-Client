@@ -28,8 +28,8 @@ ROCKET = {
         "minecraft:max_stack_size": 1,
         "minecraft:rarity": "rare",
         "minecraft:lore": _lore("item.minecraft.aerospace_rocket.lore", [
-            "Keep it with Rocket Fuel in your inventory,",
-            "then fly from Mission Control in the pause menu.",
+            "Place it on a Landing Pad, then right click",
+            "it to load fuel and choose where to fly.",
         ]),
         "minecraft:custom_data": {"aerospace_item": "rocket"},
     },
@@ -44,6 +44,20 @@ FUEL = {
         "minecraft:rarity": "uncommon",
         "minecraft:lore": _lore("item.minecraft.aerospace_fuel.lore", ["Rocket propellant. Keep away from open flames."]),
         "minecraft:custom_data": {"aerospace_item": "fuel"},
+    },
+}
+
+
+LANDING_PAD = {
+    # a trial key does nothing when used away from a vault, and no recipe uses it
+    "id": "minecraft:trial_key",
+    "components": {
+        "minecraft:item_name": tr("item.minecraft.aerospace_landing_pad", "Landing Pad"),
+        "minecraft:item_model": mc("aerospace_landing_pad"),
+        "minecraft:max_stack_size": 16,
+        "minecraft:rarity": "uncommon",
+        "minecraft:lore": _lore("item.minecraft.aerospace_landing_pad.lore", ["Right click the ground to build a launch pad."]),
+        "minecraft:custom_data": {"aerospace_item": "landing_pad"},
     },
 }
 
@@ -73,14 +87,17 @@ SUIT = [SPACE_HELMET, SPACE_CHESTPLATE, SPACE_LEGGINGS, SPACE_BOOTS]
 
 MANUAL_PAGES = [
     ("Aerospace Program\nFLIGHT MANUAL\n\nEverything a new astronaut needs to reach the stars."),
-    ("1. ROCKET\nCraft one from 4 iron blocks, glass, a lightning rod and a blast furnace.\n\n"
-     "2. FUEL\nCopper ingot, 2 coal or charcoal, gunpowder and blaze powder make 2 Rocket Fuel."),
-    ("3. MISSION CONTROL\nOpen the pause menu and choose Aerospace Mission Control. With a Rocket and "
-     "Rocket Fuel in your inventory, pick a world and choose Run Command.\n\nFlights need cheats allowed in the world."),
-    ("4. WORLDS\nThe Asteroid Belt, the Moon, Mars, Glacio and Vulcan. Bring food, armour and "
-     "fire protection for Vulcan's lava seas.\n\nPick Earth to fly home."),
-    ("5. DANGER\nEvery world hides a ruin with a monster spawner, loot and a boss: the Outpost Overseer, "
-     "Martian Warlord, Frost Lich, Magma Tyrant and Station Warden.\n\nGood luck."),
+    ("1. LANDING PAD\nCraft one from yellow and black concrete, smooth stone and a redstone lamp. "
+     "Right click the ground with it to build a pad.\n\n2. ROCKET\n4 iron blocks, glass, a lightning rod and "
+     "a blast furnace."),
+    ("3. PLACE IT\nRight click the middle of a pad with the Rocket. Right click the Rocket to open its "
+     "panel.\n\n4. FUEL\nCopper, 2 coal, gunpowder and blaze powder make 2 Rocket Fuel. Load it in the panel."),
+    ("5. LAUNCH\nPick a world and press Launch. The rocket lands on a new pad, so you can fly back.\n\n"
+     "Trips cost 1 to 4 fuel. Launching needs cheats allowed in the world."),
+    ("6. WORLDS\nThe Moon pulls a sixth as hard as Earth, Mars a third: jump higher, fall slower. "
+     "The Moon and the Asteroid Belt have no air, so wear a Space Helmet."),
+    ("7. DANGER\nEvery world hides ruins with spawners, loot and a boss: the Outpost Overseer, Martian "
+     "Warlord, Frost Lich, Magma Tyrant and Station Warden.\n\nGood luck."),
 ]
 
 
@@ -126,14 +143,77 @@ def stack(item, count=1):
 
 
 # ------------------------------------------------------------------ assets --
-ICON_ITEMS = ["aerospace_rocket", "aerospace_fuel", "aerospace_space_helmet", "aerospace_space_chestplate",
-              "aerospace_space_leggings", "aerospace_space_boots"]
+ICON_ITEMS = ["aerospace_rocket", "aerospace_fuel", "aerospace_landing_pad", "aerospace_space_helmet",
+              "aerospace_space_chestplate", "aerospace_space_leggings", "aerospace_space_boots"]
+
+# Held and dropped Rockets and Fuel use 3D models built from cuboids, while the
+# inventory keeps the flat icons (the way vanilla shows the trident).
+B = "minecraft:block/"
+
+
+def _cube(frm, to, tex, faces="nesw", up=True, down=True):
+    f = {}
+    for d in faces:
+        f[{"n": "north", "e": "east", "s": "south", "w": "west"}[d]] = {"texture": "#" + tex}
+    if up:
+        f["up"] = {"texture": "#" + tex}
+    if down:
+        f["down"] = {"texture": "#" + tex}
+    return {"from": frm, "to": to, "faces": f}
+
+
+MODELS_3D = {
+    "aerospace_rocket": {
+        "textures": {"body": B + "white_concrete", "red": B + "red_concrete", "glass": B + "light_blue_concrete",
+                     "metal": B + "gray_concrete", "particle": B + "white_concrete"},
+        "elements": [
+            _cube([6, 2, 6], [10, 13, 10], "body"),
+            _cube([6.5, 13, 6.5], [9.5, 14.5, 9.5], "red"),
+            _cube([7.25, 14.5, 7.25], [8.75, 16, 8.75], "red"),
+            _cube([5.75, 9.5, 7], [6, 11, 9], "glass"),
+            _cube([10, 9.5, 7], [10.25, 11, 9], "glass"),
+            _cube([6.5, 0.5, 6.5], [9.5, 2, 9.5], "metal"),
+            _cube([3.5, 1, 7.5], [6, 5, 8.5], "red"),
+            _cube([10, 1, 7.5], [12.5, 5, 8.5], "red"),
+            _cube([7.5, 1, 3.5], [8.5, 5, 6], "red"),
+            _cube([7.5, 1, 10], [8.5, 5, 12.5], "red"),
+        ],
+    },
+    "aerospace_fuel": {
+        "textures": {"can": B + "orange_concrete", "stripe": B + "yellow_concrete", "cap": B + "light_gray_concrete",
+                     "particle": B + "orange_concrete"},
+        "elements": [
+            _cube([5, 0, 5], [11, 4, 11], "can"),
+            _cube([4.9, 4, 4.9], [11.1, 6, 11.1], "stripe"),
+            _cube([5, 6, 5], [11, 10, 11], "can"),
+            _cube([7, 10, 7], [9, 12, 9], "cap"),
+        ],
+    },
+}
+DISPLAY_3D = {
+    "thirdperson_righthand": {"rotation": [0, 0, 0], "translation": [0, 2, 1], "scale": [0.55, 0.55, 0.55]},
+    "thirdperson_lefthand": {"rotation": [0, 0, 0], "translation": [0, 2, 1], "scale": [0.55, 0.55, 0.55]},
+    "firstperson_righthand": {"rotation": [0, -20, 10], "translation": [1, 2, 1], "scale": [0.6, 0.6, 0.6]},
+    "firstperson_lefthand": {"rotation": [0, 20, -10], "translation": [1, 2, 1], "scale": [0.6, 0.6, 0.6]},
+    "ground": {"rotation": [0, 0, 0], "translation": [0, 1, 0], "scale": [0.5, 0.5, 0.5]},
+    "fixed": {"rotation": [0, 0, 0], "translation": [0, 0, 0], "scale": [0.9, 0.9, 0.9]},
+    "head": {"rotation": [0, 0, 0], "translation": [0, 6, 0], "scale": [1, 1, 1]},
+}
 
 
 def assets():
     for name in ICON_ITEMS:
-        write_json("assets/minecraft/items/%s.json" % name,
-                   {"model": {"type": "minecraft:model", "model": "minecraft:item/" + name}})
+        flat = {"type": "minecraft:model", "model": "minecraft:item/" + name}
+        if name in MODELS_3D:
+            model = {"type": "minecraft:select", "property": "minecraft:display_context",
+                     "cases": [{"when": ["gui"], "model": flat}],
+                     "fallback": {"type": "minecraft:model", "model": "minecraft:item/%s_3d" % name}}
+            m = dict(MODELS_3D[name])
+            m["display"] = DISPLAY_3D
+            write_json("assets/minecraft/models/item/%s_3d.json" % name, m)
+        else:
+            model = flat
+        write_json("assets/minecraft/items/%s.json" % name, {"model": model})
         write_json("assets/minecraft/models/item/%s.json" % name,
                    {"parent": "minecraft:item/generated", "textures": {"layer0": "minecraft:item/" + name}})
     for suit in ("aerospace_space_suit", "aerospace_martian", "aerospace_frost", "aerospace_magma"):
@@ -151,6 +231,13 @@ def recipes():
                 "B": "minecraft:blast_furnace"},
         "pattern": [" L ", "IGI", "IBI"],
         "result": stack(ROCKET),
+    })
+    write_json("data/minecraft/recipe/aerospace_landing_pad.json", {
+        "type": "minecraft:crafting_shaped", "category": "misc",
+        "key": {"Y": "minecraft:yellow_concrete", "B": "minecraft:black_concrete", "S": "minecraft:smooth_stone",
+                "R": "minecraft:redstone_lamp"},
+        "pattern": ["YBY", "SRS", "SSS"],
+        "result": stack(LANDING_PAD),
     })
     write_json("data/minecraft/recipe/aerospace_fuel.json", {
         "type": "minecraft:crafting_shapeless", "category": "misc",
@@ -177,6 +264,7 @@ def recipes():
     # recipe book unlocks
     unlocks = {
         "aerospace_rocket": "minecraft:blast_furnace",
+        "aerospace_landing_pad": "minecraft:smooth_stone",
         "aerospace_fuel": "minecraft:blaze_powder",
         "aerospace_space_helmet": "minecraft:tinted_glass",
         "aerospace_space_chestplate": "minecraft:iron_ingot",
