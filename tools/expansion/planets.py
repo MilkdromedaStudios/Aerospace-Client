@@ -9,25 +9,19 @@ from common import vanilla_copy, write_json, tr, lang, mc
 
 FLOAT_MAX = 1.7976931348623157e+308
 
-# dest: Mission Control button number. gravity etc. feed the gravity function.
 PLANETS = [
     dict(id="asteroid_belt", biome="asteroid_field", name="The Asteroid Belt", biome_name="Asteroid Field",
-         dest=2, cost=1, gravity=0.008, safe_fall=64.0, fall_mult=0.2, vacuum=True,
-         arrive="Floating rocks, rich ores, and no air at all."),
+         arrive="Floating rocks full of ore, and derelict stations."),
     dict(id="moon", biome="lunar_highlands", name="The Moon", biome_name="Lunar Highlands",
-         dest=3, cost=2, gravity=0.0133, safe_fall=16.0, fall_mult=0.5, vacuum=True,
-         arrive="One-sixth gravity. Watch out for lost astronauts."),
+         arrive="Grey dust, basalt seas and a black, starry sky."),
     dict(id="mars", biome="martian_desert", name="Mars", biome_name="Martian Desert",
-         dest=4, cost=3, gravity=0.0304, safe_fall=8.0, fall_mult=0.7, vacuum=False,
          arrive="Red dust, ancient ruins, and something watching you."),
     dict(id="glacio", biome="glacio_tundra", name="Glacio", biome_name="Glacio Tundra",
-         dest=5, cost=4, gravity=0.06, safe_fall=4.0, fall_mult=0.9, vacuum=False,
          arrive="A frozen world of ice spikes and frozen seas."),
     dict(id="vulcan", biome="vulcan_wastes", name="Vulcan", biome_name="Vulcan Wastes",
-         dest=6, cost=4, gravity=0.1, safe_fall=2.5, fall_mult=1.25, vacuum=False,
-         arrive="Heavy gravity, lava seas and magma knights."),
+         arrive="Lava seas and basalt deltas. Bring fire resistance."),
 ]
-EARTH = dict(id="overworld", name="Earth", dest=1, cost=1)
+EARTH = dict(id="overworld", name="Earth")
 BY_ID = {p["id"]: p for p in PLANETS}
 
 
@@ -72,9 +66,6 @@ def dimension_types():
         "minecraft:visual/ambient_light_color": "#30343f",
         "minecraft:visual/sky_light_color": "#dfe6ff",
         "minecraft:visual/sky_light_factor": 1.0,
-        # bright to look at, but night-level light for spawning (as in the stock
-        # Nether), so monsters walk the surface day and night
-        "minecraft:gameplay/sky_light_level": 4.0,
     })
     write_json("data/minecraft/dimension_type/moon.json", t)
 
@@ -341,23 +332,6 @@ def variants():
         })
 
 
-def damage_and_tags():
-    d = vanilla_copy("data/minecraft/damage_type/drown.json")
-    d["message_id"] = "aerospace_vacuum"
-    d["scaling"] = "never"
-    write_json("data/minecraft/damage_type/aerospace_vacuum.json", d)
-    lang("death.attack.aerospace_vacuum", "%1$s ran out of oxygen")
-    lang("death.attack.aerospace_vacuum.player", "%1$s ran out of oxygen while fighting %2$s")
-
-    write_json("data/minecraft/tags/entity_type/aerospace_crew.json", {"values": [
-        "minecraft:zombie", "minecraft:husk", "minecraft:stray", "minecraft:skeleton", "minecraft:wither_skeleton"]})
-    write_json("data/minecraft/tags/entity_type/aerospace_low_gravity.json", {"values": [
-        "minecraft:zombie", "minecraft:husk", "minecraft:stray", "minecraft:skeleton", "minecraft:wither_skeleton",
-        "minecraft:spider", "minecraft:creeper", "minecraft:enderman", "minecraft:endermite", "minecraft:silverfish",
-        "minecraft:cow", "minecraft:pig", "minecraft:chicken", "minecraft:polar_bear", "minecraft:magma_cube",
-        "minecraft:blaze", "minecraft:strider"]})
-
-
 def generate():
     dimension_types()
     dimensions()
@@ -365,4 +339,3 @@ def generate():
     material_rules()
     noise_settings()
     variants()
-    damage_and_tags()

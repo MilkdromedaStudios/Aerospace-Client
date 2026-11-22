@@ -23,7 +23,6 @@
       "destroy_on_use": true
     },
     "minecraft:gameplay/respawn_anchor_works": false,
-    "minecraft:gameplay/sky_light_level": 4.0,
     "minecraft:gameplay/straw_bed_rule": {
       "can_set_spawn": "never",
       "can_sleep": "never",

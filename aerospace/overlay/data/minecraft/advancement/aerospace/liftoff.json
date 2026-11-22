@@ -1,8 +1,35 @@
 {
   "parent": "minecraft:aerospace/rocket_builder",
   "criteria": {
-    "launched": {
-      "trigger": "minecraft:impossible"
+    "asteroid_belt": {
+      "conditions": {
+        "to": "minecraft:asteroid_belt"
+      },
+      "trigger": "minecraft:changed_dimension"
+    },
+    "moon": {
+      "conditions": {
+        "to": "minecraft:moon"
+      },
+      "trigger": "minecraft:changed_dimension"
+    },
+    "mars": {
+      "conditions": {
+        "to": "minecraft:mars"
+      },
+      "trigger": "minecraft:changed_dimension"
+    },
+    "glacio": {
+      "conditions": {
+        "to": "minecraft:glacio"
+      },
+      "trigger": "minecraft:changed_dimension"
+    },
+    "vulcan": {
+      "conditions": {
+        "to": "minecraft:vulcan"
+      },
+      "trigger": "minecraft:changed_dimension"
     }
   },
   "display": {
@@ -19,7 +46,11 @@
   },
   "requirements": [
     [
-      "launched"
+      "asteroid_belt",
+      "moon",
+      "mars",
+      "glacio",
+      "vulcan"
     ]
   ],
   "rewards": {

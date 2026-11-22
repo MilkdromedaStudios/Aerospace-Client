@@ -28,9 +28,6 @@
                   },
                   {
                     "translate": "book.aerospace.manual.page4"
-                  },
-                  {
-                    "translate": "book.aerospace.manual.page5"
                   }
                 ],
                 "resolved": true
@@ -172,11 +169,6 @@
                   "italic": false
                 }
               ],
-              "minecraft:consumable": {
-                "consume_seconds": 3600.0,
-                "animation": "none",
-                "has_consume_particles": false
-              },
               "minecraft:custom_data": {
                 "aerospace_item": "rocket"
               }

@@ -110,6 +110,29 @@ function gl(page) {
     const toasts = await page.$$eval(".aero-toast", (t) => t.map((x) => x.textContent).join(" | "));
     check(!!file || /copied/.test(toasts), "screenshot key produces a PNG", file ? file.suggestedFilename() : toasts);
 
+    console.log("crash log");
+    await page.evaluate(() => {
+      console.error("[main/ERROR][SingleplayerServerController26]: Integrated server reported a crash");
+      console.error("Caused By: java.lang.IllegalStateException: test failure for the crash log");
+    });
+    await page.waitForSelector("#aero_crash_panel", { state: "visible", timeout: 5000 }).catch(() => null);
+    const summary = await page.$eval("#aero_crash_panel [data-k=summary]", (n) => n.textContent).catch(() => "");
+    check(/IllegalStateException: test failure/.test(summary), "crash panel shows the cause", summary);
+    const crashFile = page.waitForEvent("download", { timeout: 5000 }).catch(() => null);
+    await page.click("#aero_crash_panel [data-k=download]");
+    const dl = await crashFile;
+    let body = "";
+    if (dl) { const p = await dl.path(); body = require("fs").readFileSync(p, "utf8"); }
+    check(!!dl && /^aerospace-crash-\d{8}-\d{6}\.txt$/.test(dl.suggestedFilename()) && /Aerospace Client crash log/.test(body)
+      && /test failure for the crash log/.test(body), "crash log downloads as a text report", dl ? dl.suggestedFilename() : "no download");
+    const saved = await page.evaluate(() => { const l = window.__aerospaceCrashLog.lastCrash(); return l && l.summary; });
+    check(/test failure/.test(saved || ""), "last crash is kept for after a reload", saved);
+    await page.click("#aero_crash_panel [data-k=close]");
+    await page.evaluate(() => window.__aerospaceClient.open("crash"));
+    const tab = await page.$eval(".aero-pane.on", (n) => n.textContent);
+    check(/hit an error in this session/.test(tab) && /test failure/.test(tab), "Crash Log tab shows the saved crash");
+    await page.keyboard.press("Escape");
+
     console.log("fallback without the engine");
     const page2 = await context.newPage();
     await page2.addInitScript(() => {

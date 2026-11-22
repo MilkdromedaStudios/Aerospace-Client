@@ -1,2 +1,0 @@
-give @s minecraft:written_book[minecraft:written_book_content={title:"Flight Manual",author:"Aerospace Program",pages:[{translate:"book.aerospace.manual.page0"},{translate:"book.aerospace.manual.page1"},{translate:"book.aerospace.manual.page2"},{translate:"book.aerospace.manual.page3"},{translate:"book.aerospace.manual.page4"},{translate:"book.aerospace.manual.page5"}],resolved:true},minecraft:custom_data={aerospace_item:"manual"}] 1
-tellraw @s {translate:"aerospace.welcome",color:"aqua"}

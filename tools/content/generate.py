@@ -24,7 +24,7 @@ def write(path, obj):
 
 
 # ------------------------------------------------------------ advancements --
-def advancement(name, title, description, icon, criteria, parent=None, frame=None, xp=None, root=False, function=None):
+def advancement(name, title, description, icon, criteria, parent=None, frame=None, xp=None, root=False, loot=None):
     key = "advancements.aerospace.%s" % name
     LANG[key + ".title"] = title
     LANG[key + ".description"] = description
@@ -45,12 +45,12 @@ def advancement(name, title, description, icon, criteria, parent=None, frame=Non
     data["criteria"] = criteria
     data["display"] = display
     data["requirements"] = [[name] for name in criteria]
-    if xp or function:
+    if xp or loot:
         data["rewards"] = {}
         if xp:
             data["rewards"]["experience"] = xp
-        if function:
-            data["rewards"]["function"] = function
+        if loot:
+            data["rewards"]["loot"] = [loot]
     write("data/minecraft/advancement/aerospace/%s.json" % name, data)
 
 
@@ -72,9 +72,10 @@ def above(y):
 
 
 def advancements():
-    # joining a world for the first time hands out the Flight Manual (tools/expansion)
+    # joining a world for the first time hands out the Flight Manual (tools/expansion).
+    # Not a reward function: Eaglercraft 26.3 cannot load data-pack functions.
     advancement("root", "Aerospace Program", "Every mission starts on the ground", "firework_rocket",
-                {"enlisted": {"trigger": "minecraft:location"}}, root=True, function="minecraft:aerospace/welcome")
+                {"enlisted": {"trigger": "minecraft:location"}}, root=True, loot="minecraft:aerospace/welcome")
     advancement("stargazer", "Stargazer", "Survey the sky through a Spyglass", "spyglass",
                 {"used_spyglass": {"conditions": {"item": {"items": "minecraft:spyglass"}},
                                    "trigger": "minecraft:using_item"}}, parent="root")

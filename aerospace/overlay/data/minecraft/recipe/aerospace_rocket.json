@@ -34,11 +34,6 @@
           "italic": false
         }
       ],
-      "minecraft:consumable": {
-        "consume_seconds": 3600.0,
-        "animation": "none",
-        "has_consume_particles": false
-      },
       "minecraft:custom_data": {
         "aerospace_item": "rocket"
       }

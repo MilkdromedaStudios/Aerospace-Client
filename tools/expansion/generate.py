@@ -1,4 +1,7 @@
-"""Aerospace expansion: rockets, fuel, planets, gravity, oxygen, monsters and dungeons.
+"""Aerospace expansion: rockets, fuel, planets, monsters and dungeons.
+
+No data-pack functions: Eaglercraft 26.3 fails to load any world when the
+pack contains one (see mission.py).
 
 Writes everything into the game's built-in data and resource packs through
 aerospace/overlay, the English strings into aerospace/lang/en_us.expansion.json
@@ -14,8 +17,8 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import common  # noqa: E402
-import functions  # noqa: E402
 import items  # noqa: E402
+import mission  # noqa: E402
 import planets  # noqa: E402
 import structures  # noqa: E402
 import textures  # noqa: E402
@@ -46,8 +49,6 @@ def write_patches():
         # planet animals spawn on the planet surface blocks
         "data/minecraft/tags/block/animals_spawnable_on.json": [
             "minecraft:light_gray_concrete_powder", "minecraft:red_sand", "minecraft:snow_block"],
-        # suffocating in vacuum ignores armor
-        "data/minecraft/tags/damage_type/bypasses_armor.json": ["minecraft:aerospace_vacuum"],
         # Mission Control from the pause menu and the Quick Actions key
         "data/minecraft/tags/dialog/pause_screen_additions.json": ["minecraft:aerospace/mission_control"],
         "data/minecraft/tags/dialog/quick_actions.json": ["minecraft:aerospace/mission_control"],
@@ -64,7 +65,7 @@ def main():
     items.recipes()
     planets.generate()
     structures.generate()
-    functions.generate()
+    mission.generate()
 
     dupes = {p for p in common.WRITTEN if common.WRITTEN.count(p) > 1}
     if dupes:

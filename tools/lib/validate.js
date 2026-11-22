@@ -12,8 +12,11 @@
  *               entities, sounds, particles, effects, attributes, worldgen
  *               entries, loot tables, functions, advancements, dialogs, models,
  *               textures and translation keys
- *   functions   known commands and arguments, scoreboard objectives created
- *               before use, balanced brackets and quotes
+ *   functions   none allowed: Eaglercraft 26.3 fails to load every world when the
+ *               built-in pack contains a data-pack function, so .mcfunction files,
+ *               function tags and advancement reward functions are errors. The
+ *               commands behind dialog buttons are linted instead (known commands
+ *               and arguments, objectives, balanced brackets and quotes)
  *   structures  NBT templates: palette and block states, block entities, entities
  *
  * validate({ stock, files, ours }) returns { errors, notes, checked }.
@@ -196,6 +199,9 @@ const DISC = ["type", "condition", "function", "trigger", "element_type", "proce
 const ID_MAPS = new Set(["attributes", "components", "predicates", "spawn_costs", "spawns_by_category", "effects",
   "properties", "dimensions", "textures"]);
 const FREE_MAPS = new Set(["criteria", "key"]);
+const NO_FUNCTIONS = "data-pack functions crash Eaglercraft 26.3: with any function in the built-in pack, " +
+  "every world fails to load (\"CompletableFuture observed before completion\")";
+
 // fields that are valid but never used by the stock files
 // (recipe results take the same {id, count, components} stack as advancement icons)
 const EXTRA_KEYS = { rewards: ["function", "loot"], result: ["components"] };
@@ -663,7 +669,7 @@ const KEY_REFS = {
     translate: "lang", sound: ["sound"], equip_sound: ["sound"], random_sequence: "free", message_id: "free",
     background: ["asset:textures"],
   },
-  advancement: { parent: ["advancement"], function: ["function"], recipes: ["recipe"], items: ["asset:items", "tags/item"], id: ["asset:items"], to: ["dimension"], from: ["dimension"], structures: ["worldgen/structure", "tags/worldgen/structure"] },
+  advancement: { parent: ["advancement"], function: ["function"], loot: ["loot_table"], recipes: ["recipe"], items: ["asset:items", "tags/item"], id: ["asset:items"], to: ["dimension"], from: ["dimension"], structures: ["worldgen/structure", "tags/worldgen/structure"] },
   recipe: { id: ["asset:items"], ingredients: ["asset:items", "tags/item"], key: ["asset:items", "tags/item"] },
   loot_table: { name: ["asset:items"] },
   dimension_type: { infiniburn: ["tags/block"], timelines: ["tags/timeline"], default_clock: ["world_clock"] },
@@ -865,7 +871,12 @@ function validate({ stock, files, ours }) {
     const report = (p, msg) => errors.push(`${name}${p ? " " + p : ""}: ${msg}`);
     const data = files.get(name);
     checked++;
-    if (name.endsWith(".mcfunction")) { fnFiles.set(name, data.toString("utf8")); continue; }
+    if (name.endsWith(".mcfunction")) {
+      report("", NO_FUNCTIONS);
+      fnFiles.set(name, data.toString("utf8"));
+      continue;
+    }
+    if (reg === "tags/function") { report("", NO_FUNCTIONS); continue; }
     if (name.endsWith(".nbt")) {
       if (!structureInfo) structureInfo = memo.structures = stockStructureInfo(stock);
       checkStructure(name, data, ix, structureInfo, report, lang);
@@ -892,6 +903,7 @@ function validate({ stock, files, ours }) {
     if (!s.examples) { report("", `no stock ${reg} files to compare with`); continue; }
     if (!(stock.has(name))) s.check(obj, report, ix, "@", "", STRICT.test(reg)); // stock files we edit keep their own shape
     references(reg, obj, ix, s, report, lang);
+    if (reg === "advancement" && obj.rewards && obj.rewards.function) report("rewards.function", NO_FUNCTIONS);
   }
 
   const objectives = new Map();

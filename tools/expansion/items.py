@@ -1,7 +1,7 @@
 """Custom items: rocket, rocket fuel, space suit, flight manual, plus mob gear.
 
 Each item is a stock item with data components (name, model, custom data,
-behaviour), defined once here and reused by recipes, loot tables, functions and
+behaviour), defined once here and reused by recipes, loot tables, advancements and
 structure entities.
 """
 from common import lang, tr, mc, write_json
@@ -28,12 +28,9 @@ ROCKET = {
         "minecraft:max_stack_size": 1,
         "minecraft:rarity": "rare",
         "minecraft:lore": _lore("item.minecraft.aerospace_rocket.lore", [
-            "Hold right click to open Mission Control.",
-            "Each trip burns Rocket Fuel from your inventory.",
+            "Keep it with Rocket Fuel in your inventory,",
+            "then fly from Mission Control in the pause menu.",
         ]),
-        # Using it opens the launch dialog, which interrupts the "use" long before
-        # this would finish, so the rocket is never consumed.
-        "minecraft:consumable": {"consume_seconds": 3600.0, "animation": "none", "has_consume_particles": False},
         "minecraft:custom_data": {"aerospace_item": "rocket"},
     },
 }
@@ -76,16 +73,14 @@ SUIT = [SPACE_HELMET, SPACE_CHESTPLATE, SPACE_LEGGINGS, SPACE_BOOTS]
 
 MANUAL_PAGES = [
     ("Aerospace Program\nFLIGHT MANUAL\n\nEverything a new astronaut needs to reach the stars."),
-    ("1. ROCKET\nCraft one from 4 iron blocks, glass, a lightning rod and a blast furnace. It is reusable.\n\n"
-     "Hold right click with it to open Mission Control."),
-    ("2. FUEL\nCopper ingot, 2 coal or charcoal, gunpowder and blaze powder make 2 Rocket Fuel.\n\n"
-     "Trips cost:\nEarth 1, Belt 1, Moon 2, Mars 3, Glacio 4, Vulcan 4."),
-    ("3. AIR\nThe Moon and the Asteroid Belt have no air. Wear a Space Helmet (iron and tinted glass) or "
-     "you will run out of oxygen.\n\nMission Control also opens from the pause menu."),
-    ("4. GRAVITY\nThe Moon pulls at a sixth of Earth, Mars a third. Jump higher, fall slower.\n\n"
-     "Vulcan is heavy and hot: arrive with fire protection."),
-    ("5. DANGER\nLost astronauts haunt the Moon, Martians roam Mars, frost wraiths guard Glacio and magma "
-     "knights walk Vulcan.\n\nTheir ruins hold the best loot. Good luck."),
+    ("1. ROCKET\nCraft one from 4 iron blocks, glass, a lightning rod and a blast furnace.\n\n"
+     "2. FUEL\nCopper ingot, 2 coal or charcoal, gunpowder and blaze powder make 2 Rocket Fuel."),
+    ("3. MISSION CONTROL\nOpen the pause menu and choose Aerospace Mission Control. With a Rocket and "
+     "Rocket Fuel in your inventory, pick a world and choose Run Command.\n\nFlights need cheats allowed in the world."),
+    ("4. WORLDS\nThe Asteroid Belt, the Moon, Mars, Glacio and Vulcan. Bring food, armour and "
+     "fire protection for Vulcan's lava seas.\n\nPick Earth to fly home."),
+    ("5. DANGER\nEvery world hides a ruin with a monster spawner, loot and a boss: the Outpost Overseer, "
+     "Martian Warlord, Frost Lich, Magma Tyrant and Station Warden.\n\nGood luck."),
 ]
 
 

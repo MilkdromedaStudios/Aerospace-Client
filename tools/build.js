@@ -29,13 +29,14 @@ const AERO = path.join(ROOT, "aerospace");
 const pkg = JSON.parse(fs.readFileSync(path.join(ROOT, "package.json"), "utf8"));
 
 function parseArgs(argv) {
-  const args = { out: path.join(ROOT, "docs", "index.html"), upstream: null, spaceExpansion: false };
+  const args = { out: path.join(ROOT, "docs", "index.html"), upstream: null, spaceExpansion: true };
   for (let i = 2; i < argv.length; ++i) {
     if (argv[i] === "--upstream") args.upstream = path.resolve(argv[++i]);
-    else if (argv[i] === "--enable-space-expansion") args.spaceExpansion = true;
+    else if (argv[i] === "--enable-space-expansion") args.spaceExpansion = true;      // the default; kept for old scripts
+    else if (argv[i] === "--disable-space-expansion") args.spaceExpansion = false;
     else if (argv[i] === "--out") args.out = path.resolve(argv[++i]);
     else if (argv[i] === "-h" || argv[i] === "--help") {
-      console.log("usage: node tools/build.js [--upstream <file.html>] [--out <file.html>] [--enable-space-expansion]");
+      console.log("usage: node tools/build.js [--upstream <file.html>] [--out <file.html>] [--disable-space-expansion]");
       process.exit(0);
     } else throw new Error("unknown argument: " + argv[i]);
   }
@@ -83,7 +84,7 @@ const RESIZABLE = /^assets\/minecraft\/textures\/gui\/title\/background\/panoram
 /** Applies overlay, lang and patches to an asset map in place. */
 function applyAerospace(files, options = {}) {
   const stock = new Map(files);
-  const spaceExpansion = options.spaceExpansion === true;
+  const spaceExpansion = options.spaceExpansion !== false;
   const generatedManifest = path.join(ROOT, "tools", "expansion", "generated-files.txt");
   const expansionFiles = new Set(fs.existsSync(generatedManifest)
     ? fs.readFileSync(generatedManifest, "utf8").split(/\r?\n/).filter(Boolean)
@@ -94,8 +95,8 @@ function applyAerospace(files, options = {}) {
   // 1. overlay
   const overlayDir = path.join(AERO, "overlay");
   for (const rel of walk(overlayDir)) {
-    // The general Aerospace advancement tree is coupled to the expansion's
-    // welcome function and Flight Manual. Keep that tree out of the safe build too.
+    // The Aerospace advancement tree hands out the expansion's Flight Manual and
+    // leads into its advancements, so it goes with the expansion.
     if (!spaceExpansion && (expansionFiles.has(rel) || rel.startsWith("data/minecraft/advancement/aerospace/"))) continue;
     const data = fs.readFileSync(path.join(overlayDir, rel));
     if (rel.endsWith(".json") || rel.endsWith(".mcmeta")) parseJSON(data, "overlay/" + rel);
@@ -272,6 +273,9 @@ function patchShell(shell, ctx) {
     "",
   ].join("\n");
   shell = replaceOnce(shell, "</head>", head + "</head>", "</head>");
+  // the crash log goes first in <head> so it sees everything the game prints
+  shell = replaceOnce(shell, /<head>/, '<head>\n<script type="text/javascript" id="aerospace-crashlog">\n' + template("crashlog.js") + "</script>",
+    "<head>");
 
   const body = [
     template("boot.html").trimEnd(),
@@ -305,7 +309,7 @@ async function main() {
   const before = epk.files.size;
   const stats = patchAssets(epk, args);
   log(`assets: ${before} upstream files, ${stats.replaced} replaced, ${stats.added} added, ${stats.langKeys} language strings changed`);
-  log(args.spaceExpansion ? "Space Expansion enabled (experimental)" : "Space Expansion disabled (safe default; use --enable-space-expansion to opt in)");
+  log(args.spaceExpansion ? "Space Expansion enabled" : "Space Expansion disabled (--disable-space-expansion)");
 
   epk.comment = "\n\n #  Aerospace Client " + pkg.version + " assets\n #  built on Eaglercraft (EPK v2.0)\n\n";
   const packed = writeEPK(epk);

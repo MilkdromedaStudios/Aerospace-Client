@@ -123,6 +123,10 @@ def _drop_none(slots):
     return {s: TagFloat(0.0) for s in slots}
 
 
+CREW_NAMES = {"lost_astronaut": "Lost Astronaut", "martian": "Martian", "frost_wraith": "Frost Wraith",
+              "magma_knight": "Magma Knight"}
+
+
 def crew(kind, extra=None):
     """Entity NBT for planet monsters (spawners and bosses)."""
     gear = {
@@ -133,7 +137,7 @@ def crew(kind, extra=None):
     }[kind]
     eid, equipment = gear
     e = {"id": eid, "equipment": dict(equipment), "Tags": ["aero_seen", "aero_" + kind],
-         "CustomName": {"translate": "entity.aerospace." + kind}}
+         "CustomName": tr("entity.aerospace." + kind, CREW_NAMES[kind])}
     if kind != "lost_astronaut":
         e["drop_chances"] = _drop_none(("head", "chest", "legs", "feet"))
     if extra:
