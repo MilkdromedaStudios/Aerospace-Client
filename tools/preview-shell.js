@@ -206,6 +206,9 @@ ${template("aerospace.css")}
 <body style="position:fixed;inset:0;margin:0;width:100%;height:100%;overflow:hidden;background-color:black;">
 <div id="loading_screen"><div id="boot_status"></div></div>
 <div id="game_frame" style="position:fixed;inset:0;margin:0;width:100%;height:100%;overflow:hidden;background-color:black;"></div>
+${template("boot.html").trimEnd()}
+<script id="aerospace-boot">
+${template("boot.js")}</script>
 <script id="aerospace-shaders">
 ${template("shaders.js")}</script>
 <script id="aerospace-client">
