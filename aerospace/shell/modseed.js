@@ -11,8 +11,9 @@
  * if they deleted it, it is not put back. A mod with the same id that the
  * player installed themselves is left alone.
  *
- * window.__aerospaceModSeed is a promise the launcher waits for before
- * starting the game.
+ * It runs at the top of the page, before the ~75 MB of game data is read, so it
+ * finishes long before the game looks at its mods. window.__aerospaceModSeed
+ * is a promise with the result, for debugging.
  */
 (function () {
 	"use strict";

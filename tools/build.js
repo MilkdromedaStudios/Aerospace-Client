@@ -242,7 +242,6 @@ function patchShell(shell, ctx) {
   const mods = ctx.spaceExpansion === false ? [] : buildMods(AERO);
   ctx.mods = mods.map((m) => `${m.name} ${m.version}`);
   const tokens = {
-    "{{PAYLOAD_MARKS}}": JSON.stringify(ctx.payloadMarks || []),
     "{{BUNDLED_MODS}}": JSON.stringify(mods.map((m) => ({ id: m.id, name: m.name, version: m.version, zip: m.zip.toString("base64") }))),
     "{{EMBLEM_DATA_URI}}": dataURI("emblem.png"),
     "{{GAME_VERSION}}": version,
@@ -279,21 +278,11 @@ function patchShell(shell, ctx) {
   ].join("\n");
   shell = replaceOnce(shell, "</head>", head + "</head>", "</head>");
   // the crash log goes first in <head> so it sees everything the game prints
-  // The crash log and mod installer go first. The launcher follows straight
-  // away, before the ~75 MB of game data: its markup starts the page body, so
-  // the browser paints the launcher while the rest of the file is still arriving.
+  // The crash log and the bundled mod installer go first, before the game data.
   shell = replaceOnce(shell, /<head>/, '<head>\n<meta charset="utf-8" />'
     + '\n<script type="text/javascript" id="aerospace-crashlog">\n' + template("crashlog.js") + "</script>"
-    + '\n<script type="text/javascript" id="aerospace-modseed">\n' + template("modseed.js") + "</script>"
-    + '\n<style id="aerospace-launcher-style">\n' + template("launcher.css") + "</style>\n"
-    + template("launcher.html").trimEnd()
-    + '\n<script type="text/javascript" id="aerospace-launcher">\n' + template("launcher.js") + "</script>\n", "<head>");
-  // The game prepares itself in the background; only its start waits for LAUNCH.
-  const GATE = /(\/\/ Let the early-load layer paint before synchronous startup\.\s*\n\s*)setTimeout\(\(\) => \{([\s\S]*?)\n(\s*)\}, 60\);/g;
-  const gateMatches = shell.match(GATE);
-  if (!gateMatches || gateMatches.length !== 1) fail("shell patch failed, anchor not found or not unique: launch gate");
-  shell = shell.replace(GATE, (m, lead, body, indent) =>
-    lead + "(window.__aerospaceLaunchGate || Promise.resolve()).then(() => setTimeout(() => {" + body + "\n" + indent + "}, 60));");
+    + '\n<script type="text/javascript" id="aerospace-modseed">\n' + template("modseed.js") + "</script>\n", "<head>");
+
 
   const body = [
     // must run before the game creates its WebGL context (main() starts after the
@@ -335,8 +324,6 @@ async function main() {
 
   const ctx = {
     spaceExpansion: args.spaceExpansion,
-    payloadMarks: ["eag-inline-decoder", "eag-inline-wasm-br", "eag-inline-mesh-wasm-br", "eag-inline-server-wasm-br",
-      "eag-inline-assets", "eag-inline-sounds"].map((id) => ({ id, bytes: payloads.get(id).text.length })),
     oldAssetsSize: assetsBytes.length,
     newAssetsSize: packed.length,
     soundsSize: payloads.get("eag-inline-sounds").size,

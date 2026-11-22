@@ -1,7 +1,7 @@
 {
   "id": "aerospace",
   "name": "Aerospace",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "authors": ["Aerospace Client"],
   "description": "Placeable 3D rockets, landing pads, fuel, launches to five worlds, planet gravity and oxygen."
 }

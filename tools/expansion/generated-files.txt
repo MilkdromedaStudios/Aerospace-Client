@@ -79,6 +79,10 @@ data/minecraft/loot_table/aerospace/item/flight_manual.json
 data/minecraft/loot_table/aerospace/item/fuel.json
 data/minecraft/loot_table/aerospace/item/landing_pad.json
 data/minecraft/loot_table/aerospace/item/rocket.json
+data/minecraft/loot_table/aerospace/item/space_boots.json
+data/minecraft/loot_table/aerospace/item/space_chestplate.json
+data/minecraft/loot_table/aerospace/item/space_helmet.json
+data/minecraft/loot_table/aerospace/item/space_leggings.json
 data/minecraft/loot_table/aerospace/welcome.json
 data/minecraft/loot_table/chests/aerospace/crash_site.json
 data/minecraft/loot_table/chests/aerospace/derelict_station.json

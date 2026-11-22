@@ -75,43 +75,7 @@ function gl(page) {
     page.on("pageerror", (e) => pageErrors.push(String(e)));
     await page.goto(url + "?fast&nored");
 
-    console.log("launcher");
-    await page.waitForSelector("#aero_launcher .aero-l-boot:not([hidden])", { timeout: 10000 });
-    check(true, "boot sequence shows on the first visit");
-    await page.keyboard.press("x");
-    await page.waitForFunction(() => document.querySelector("#aero_launcher .aero-l-boot").hidden, null, { timeout: 2000 }).catch(() => {});
-    check(await page.evaluate(() => document.querySelector("#aero_launcher .aero-l-boot").hidden), "any key skips the boot sequence");
-    check(await page.evaluate(() => document.activeElement && document.activeElement.id === "aero_l_tab_launch"), "focus lands on the LAUNCH tab");
-    await page.keyboard.press("ArrowDown");
-    check(await page.evaluate(() => document.getElementById("aero_l_servers").classList.contains("is-on")
-      && document.activeElement.id === "aero_l_tab_servers"), "arrow keys move between sections");
-    await page.keyboard.press("Enter");
-    check(await page.evaluate(() => document.getElementById("aero_l_servers").contains(document.activeElement)), "Enter moves into the section");
-    await page.keyboard.press("Escape");
-    check(await page.evaluate(() => document.activeElement.id === "aero_l_tab_servers"), "Escape returns to the menu");
-    await page.fill('[data-k="new-name"]', "Test Server");
-    await page.fill('[data-k="new-address"]', "wss://example.org");
-    await page.click('[data-action="add-server"]');
-    const savedServers = await page.evaluate(() => JSON.parse(localStorage.getItem("Aerospace:servers") || "[]"));
-    check(savedServers.length === 1 && savedServers[0].address === "wss://example.org", "servers are saved under Aerospace:", JSON.stringify(savedServers));
-    await page.waitForTimeout(1300);
-    const fpsText = await page.$eval(".aero-l-fps", (n) => n.textContent);
-    check(/^FPS \d+ · \d+\.\d MS$/.test(fpsText), "FPS counter shows measured numbers", fpsText);
-    const checksText = await page.$eval('[data-k="checks"]', (n) => n.textContent);
-    check(/WebGL 2|not available/.test(checksText) && !/…/.test(checksText.replace(/GAME DATA.*/, "")), "systems check shows detected values", checksText.slice(0, 160));
-    await page.click('[role="tab"][data-panel="settings"]');
-    await page.click('.aero-l-seg button:has-text("HIGH")');
-    check(await page.evaluate(() => JSON.parse(localStorage.getItem("Aerospace:settings")).density === "high"), "settings persist");
-    await page.click('[role="tab"][data-panel="launch"]');
-    await page.fill('[data-k="username"]', "Astro_Test");
-    await page.click('[data-action="launch"]');
-    check(await page.evaluate(() => document.getElementById("aero_launcher") === null), "LAUNCH removes the launcher from the page");
-    check(await page.evaluate(() => localStorage.getItem("_eaglercraftX.username") === btoa("Astro_Test")), "the call sign becomes the game username");
-    const keysBefore = await page.evaluate(() => Object.keys(localStorage).filter((k) => /^Aerospace:/.test(k)).length);
-    check(keysBefore >= 2, "launcher storage is namespaced Aerospace:");
     await page.waitForFunction(() => window.__aerospaceBootDone && window.__mock.phase === "title", null, { timeout: 30000 });
-    const loadingGone = await page.waitForFunction(() => document.getElementById("aero_loading") === null, null, { timeout: 2000 }).then(() => true, () => false);
-    check(loadingGone, "loading screen is removed once the game shows");
     await page.waitForTimeout(800);
 
     console.log("shader engine");
@@ -176,7 +140,6 @@ function gl(page) {
       Object.defineProperty(window, "__aerospaceShaders", { configurable: true, set(v) { v.disabled = true; this.__s = v; }, get() { return this.__s; } });
     });
     await page2.goto(url + "?fast&nored");
-    await page2.evaluate(() => window.Aerospace.launch());
     await page2.waitForFunction(() => window.__aerospaceBootDone && window.__mock.phase === "title", null, { timeout: 30000 });
     await page2.evaluate(() => {
       window.__aerospaceClient.open("shaders");
