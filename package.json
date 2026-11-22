@@ -1,6 +1,6 @@
 {
   "name": "aerospace-client",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Aerospace Client: a space-themed browser client built on Eaglercraft 26.3",
   "private": true,
   "license": "Apache-2.0",

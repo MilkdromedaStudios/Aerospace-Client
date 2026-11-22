@@ -26,37 +26,32 @@ function load() {
   return base;
 }
 
-test("Space Expansion is excluded from the default build", () => {
+// 2.0.0 crashed every world because of data-pack functions (see the validator);
+// 2.0.1 removed them, so the expansion is back on by default, with a switch off.
+const EXPANSION_FILES = [
+  "data/minecraft/dimension/moon.json",
+  "data/minecraft/dimension_type/moon.json",
+  "data/minecraft/worldgen/noise_settings/mars.json",
+  "data/minecraft/dialog/aerospace/mission_control.json",
+  "assets/minecraft/items/aerospace_rocket.json",
+  "data/minecraft/advancement/aerospace/root.json",
+];
+
+test("the default build includes the Space Expansion, with no functions", { skip }, () => {
   const { stock } = load();
   const files = new Map(stock);
-  const { ours } = applyAerospace(files);
-  for (const path of [
-    "data/minecraft/dimension/moon.json",
-    "data/minecraft/dimension_type/moon.json",
-    "data/minecraft/worldgen/noise_settings/mars.json",
-    "data/minecraft/function/aerospace/load.mcfunction",
-    "assets/minecraft/items/aerospace_rocket.json",
-    "data/minecraft/advancement/aerospace/root.json",
-  ]) {
-    assert.equal(files.has(path), false, "default build unexpectedly includes " + path);
-  }
-  assert.equal(ours.has("data/minecraft/dimension/moon.json"), false);
+  applyAerospace(files);
+  for (const path of EXPANSION_FILES) assert.equal(files.has(path), true, "default build is missing " + path);
+  const fns = [...files.keys()].filter((f) => /^data\/[^/]+\/function\//.test(f) || /^data\/[^/]+\/tags\/function\//.test(f));
+  assert.deepStrictEqual(fns, [], "data-pack functions crash Eaglercraft 26.3");
 });
 
-test("Space Expansion remains available as an explicit opt-in", () => {
+test("the Space Expansion can be left out", { skip }, () => {
   const { stock } = load();
   const files = new Map(stock);
-  applyAerospace(files, { spaceExpansion: true });
-  for (const path of [
-    "data/minecraft/dimension/moon.json",
-    "data/minecraft/dimension_type/moon.json",
-    "data/minecraft/worldgen/noise_settings/mars.json",
-    "data/minecraft/function/aerospace/load.mcfunction",
-    "assets/minecraft/items/aerospace_rocket.json",
-    "data/minecraft/advancement/aerospace/root.json",
-  ]) {
-    assert.equal(files.has(path), true, "opt-in build is missing " + path);
-  }
+  const { ours } = applyAerospace(files, { spaceExpansion: false });
+  for (const path of EXPANSION_FILES) assert.equal(files.has(path), false, "build without the expansion includes " + path);
+  assert.equal(ours.has("data/minecraft/dimension/moon.json"), false);
 });
 
 const D = "data/minecraft/";
@@ -66,7 +61,7 @@ const textEdit = (from, to) => (buf) => {
   if (!text.includes(from)) throw new Error("mutation anchor not found: " + from);
   return Buffer.from(text.replace(from, to));
 };
-const append = (line) => (buf) => Buffer.from(buf.toString("utf8") + line + "\n");
+const button = (command) => jsonEdit((o) => { o.actions[0].action.command = command; });
 
 const MUTATIONS = [
   ["placed feature typo", D + "worldgen/biome/martian_desert.json",
@@ -87,24 +82,23 @@ const MUTATIONS = [
     textEdit('"minecraft:trident"', '"minecraft:tridentt"'), "unknown asset:items minecraft:tridentt"],
   ["advancement trigger typo", D + "advancement/aerospace/suit_up.json",
     textEdit("minecraft:inventory_changed", "minecraft:inventory_change"), "unknown trigger minecraft:inventory_change"],
-  ["entity tag typo", D + "tags/entity_type/aerospace_crew.json",
-    textEdit('"minecraft:husk"', '"minecraft:huskk"'), "unknown entity minecraft:huskk"],
+  ["block tag typo", D + "tags/block/animals_spawnable_on.json",
+    textEdit('"minecraft:red_sand"', '"minecraft:red_sandd"'), "unknown asset:blockstates minecraft:red_sandd"],
   ["variant texture missing", D + "cow_variant/moon.json", textEdit('cow_moon"', 'cow_mooon"'), "missing texture"],
-  ["objective never created", D + "function/aerospace/tick.mcfunction",
-    append("scoreboard players set @s aero.nope 1"), "objective aero.nope is never created"],
-  ["unknown command", D + "function/aerospace/tick.mcfunction", append("fly @s"), "unknown command fly"],
-  ["impossible block state", D + "function/aerospace/tick.mcfunction",
-    append("setblock ~ ~ ~ minecraft:chest[facing=up]"), "property facing has no value up"],
-  ["sound typo", D + "function/aerospace/rocket/liftoff.mcfunction",
-    textEdit("entity.firework_rocket.launch", "entity.firework_rocket.lunch"), "unknown sound minecraft:entity.firework_rocket.lunch"],
-  ["missing translation", D + "function/aerospace/welcome.mcfunction",
-    textEdit('translate:"aerospace.welcome"', 'translate:"aerospace.welcom"'), "missing translation aerospace.welcom"],
-  ["function typo", D + "function/aerospace/second.mcfunction",
-    textEdit("env/player", "env/players"), "unknown function minecraft:aerospace/env/players"],
-  ["unbalanced SNBT", D + "function/aerospace/welcome.mcfunction",
-    textEdit('color:"aqua"}', 'color:"aqua"'), "unbalanced brackets or quotes"],
-  ["dialog button runs a missing trigger", D + "dialog/aerospace/mission_control.json",
-    textEdit("trigger aero.launch set 3", "trigger aero.lunch set 3"), "objective aero.lunch is never created"],
+  ["function file", D + "function/probe.mcfunction", () => Buffer.from("say hi\n"), "data-pack functions crash Eaglercraft 26.3"],
+  ["function tag", D + "tags/function/tick.json", () => Buffer.from('{"values":[]}'), "data-pack functions crash Eaglercraft 26.3"],
+  ["advancement reward function", D + "advancement/aerospace/suit_up.json",
+    jsonEdit((o) => { o.rewards = { function: "minecraft:x" }; }), "data-pack functions crash Eaglercraft 26.3"],
+  ["unknown command in a dialog button", D + "dialog/aerospace/mission_control.json",
+    button("/fly @s"), "unknown command fly"],
+  ["impossible block state in a dialog button", D + "dialog/aerospace/mission_control.json",
+    button("/setblock ~ ~ ~ minecraft:chest[facing=up]"), "property facing has no value up"],
+  ["unknown dimension in a dialog button", D + "dialog/aerospace/mission_control.json",
+    textEdit("in minecraft:moon run", "in minecraft:mooon run"), "unknown dimension minecraft:mooon"],
+  ["unbalanced command in a dialog button", D + "dialog/aerospace/mission_control.json",
+    textEdit('aerospace_item:\\"fuel\\"}] in minecraft:mars', 'aerospace_item:\\"fuel\\"} in minecraft:mars'), "unbalanced brackets or quotes"],
+  ["missing translation in a dialog", D + "dialog/aerospace/mission_control.json",
+    textEdit('"aerospace.mission_control.body"', '"aerospace.mission_control.bdy"'), "missing translation aerospace.mission_control.bdy"],
   ["unknown item component", D + "recipe/aerospace_fuel.json",
     jsonEdit((o) => { o.result.components["minecraft:fuel_value"] = 3; }), "unknown component"],
 ];
@@ -118,10 +112,9 @@ test("the shipped pack passes validation", { skip }, () => {
 for (const [what, file, mutate, expected] of MUTATIONS) {
   test("validator catches: " + what, { skip }, () => {
     const { stock, files, ours } = load();
-    assert.ok(files.has(file), "missing " + file);
     const copy = new Map(files);
     copy.set(file, mutate(files.get(file)));
-    const { errors } = validate({ stock, files: copy, ours });
+    const { errors } = validate({ stock, files: copy, ours: new Set([...ours, file]) });
     assert.ok(errors.some((e) => e.includes(expected)), `expected an error containing "${expected}", got:\n${errors.join("\n")}`);
   });
 }

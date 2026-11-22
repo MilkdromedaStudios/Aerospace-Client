@@ -187,6 +187,8 @@ const MOCK_GAME = `
 const html = `<!DOCTYPE html>
 <html style="width:100%;height:100%;background-color:black;">
 <head>
+<script type="text/javascript" id="aerospace-crashlog">
+${template("crashlog.js")}</script>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Aerospace Client shell preview</title>

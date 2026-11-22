@@ -24,6 +24,8 @@
     ]
   ],
   "rewards": {
-    "function": "minecraft:aerospace/welcome"
+    "loot": [
+      "minecraft:aerospace/welcome"
+    ]
   }
 }

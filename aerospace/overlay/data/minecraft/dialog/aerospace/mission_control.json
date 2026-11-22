@@ -28,7 +28,7 @@
       "width": 150,
       "action": {
         "type": "minecraft:run_command",
-        "command": "/trigger aero.launch set 1"
+        "command": "/execute if items entity @s container.* *[minecraft:custom_data~{aerospace_item:\"rocket\"}] if items entity @s container.* *[minecraft:custom_data~{aerospace_item:\"fuel\"}] in minecraft:overworld run spreadplayers ~ ~ 0 24 false @s"
       }
     },
     {
@@ -41,7 +41,7 @@
       "width": 150,
       "action": {
         "type": "minecraft:run_command",
-        "command": "/trigger aero.launch set 2"
+        "command": "/execute if items entity @s container.* *[minecraft:custom_data~{aerospace_item:\"rocket\"}] if items entity @s container.* *[minecraft:custom_data~{aerospace_item:\"fuel\"}] in minecraft:asteroid_belt run spreadplayers ~ ~ 0 64 under 200 false @s"
       }
     },
     {
@@ -54,7 +54,7 @@
       "width": 150,
       "action": {
         "type": "minecraft:run_command",
-        "command": "/trigger aero.launch set 3"
+        "command": "/execute if items entity @s container.* *[minecraft:custom_data~{aerospace_item:\"rocket\"}] if items entity @s container.* *[minecraft:custom_data~{aerospace_item:\"fuel\"}] in minecraft:moon run spreadplayers ~ ~ 0 24 false @s"
       }
     },
     {
@@ -67,7 +67,7 @@
       "width": 150,
       "action": {
         "type": "minecraft:run_command",
-        "command": "/trigger aero.launch set 4"
+        "command": "/execute if items entity @s container.* *[minecraft:custom_data~{aerospace_item:\"rocket\"}] if items entity @s container.* *[minecraft:custom_data~{aerospace_item:\"fuel\"}] in minecraft:mars run spreadplayers ~ ~ 0 24 false @s"
       }
     },
     {
@@ -80,7 +80,7 @@
       "width": 150,
       "action": {
         "type": "minecraft:run_command",
-        "command": "/trigger aero.launch set 5"
+        "command": "/execute if items entity @s container.* *[minecraft:custom_data~{aerospace_item:\"rocket\"}] if items entity @s container.* *[minecraft:custom_data~{aerospace_item:\"fuel\"}] in minecraft:glacio run spreadplayers ~ ~ 0 24 false @s"
       }
     },
     {
@@ -93,7 +93,7 @@
       "width": 150,
       "action": {
         "type": "minecraft:run_command",
-        "command": "/trigger aero.launch set 6"
+        "command": "/execute if items entity @s container.* *[minecraft:custom_data~{aerospace_item:\"rocket\"}] if items entity @s container.* *[minecraft:custom_data~{aerospace_item:\"fuel\"}] in minecraft:vulcan run spreadplayers ~ ~ 0 64 false @s"
       }
     }
   ],

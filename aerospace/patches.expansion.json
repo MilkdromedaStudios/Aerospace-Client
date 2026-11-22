@@ -5,9 +5,6 @@
       "minecraft:red_sand",
       "minecraft:snow_block"
     ],
-    "data/minecraft/tags/damage_type/bypasses_armor.json": [
-      "minecraft:aerospace_vacuum"
-    ],
     "data/minecraft/tags/dialog/pause_screen_additions.json": [
       "minecraft:aerospace/mission_control"
     ],

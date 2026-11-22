@@ -804,6 +804,39 @@
 		]);
 	}
 
+	function buildCrashPane() {
+		var log = window.__aerospaceCrashLog;
+		if (!log) return el("div", { class: "aero-pane" }, [el("div", { class: "aero-info", text: "The crash log is not running." })]);
+		var note = el("div", { class: "aero-info" });
+		function done(msg) { toast(esc(msg)); }
+		function copy(text) { log.copy(text).then(function () { done("Crash log copied to the clipboard."); },
+			function () { done("The browser blocked copying: use Download instead."); }); }
+		function render() {
+			var last = log.lastCrash();
+			var html = log.crashed()
+				? "<strong>The game hit an error in this session.</strong> "
+				: "<strong>No crash in this session.</strong> ";
+			html += last
+				? "The last saved crash is from " + esc(new Date(last.at).toLocaleString()) + ":<pre class=\"aero-crash-summary\">" + esc(last.summary || "") + "</pre>"
+				: "No crash has been saved yet.";
+			note.innerHTML = html;
+		}
+		render();
+		return el("div", { class: "aero-pane" }, [
+			note,
+			row("Last crash", "The report saved when the game last failed. Share it when you report a problem.", [
+				button("Copy", function () { var l = log.lastCrash(); if (l) copy(l.report); else done("No crash has been saved."); }),
+				button("Download", function () { var l = log.lastCrash(); if (l) { log.download(l.report); done("Saved to your downloads."); } else done("No crash has been saved."); }),
+				button("Clear", function () { log.clearLast(); render(); done("Saved crash cleared."); })
+			]),
+			row("This session", "Everything the game has logged since the page opened, including warnings.", [
+				button("Copy", function () { copy(log.report()); }),
+				button("Download", function () { log.download(log.report()); done("Saved to your downloads."); })
+			]),
+			el("div", { class: "aero-info", text: "The crash log only reads what the game prints to the browser console. Nothing is uploaded." })
+		]);
+	}
+
 	function buildAboutPane() {
 		return el("div", { class: "aero-pane" }, [el("div", { class: "aero-about", html:
 			"<h2>Aerospace Client " + VERSION + "</h2>"
@@ -841,6 +874,7 @@
 		addTab("shaders", "Shaders", buildShadersPane());
 		addTab("hud", "HUD", buildHudPane());
 		addTab("settings", "Settings", buildSettingsPane());
+		addTab("crash", "Crash Log", buildCrashPane());
 		addTab("about", "About", buildAboutPane());
 
 		deckParts.footer = el("span");

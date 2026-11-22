@@ -1,0 +1,46 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:written_book",
+          "weight": 1,
+          "modifier": {
+            "type": "minecraft:set_components",
+            "components": {
+              "minecraft:written_book_content": {
+                "title": "Flight Manual",
+                "author": "Aerospace Program",
+                "pages": [
+                  {
+                    "translate": "book.aerospace.manual.page0"
+                  },
+                  {
+                    "translate": "book.aerospace.manual.page1"
+                  },
+                  {
+                    "translate": "book.aerospace.manual.page2"
+                  },
+                  {
+                    "translate": "book.aerospace.manual.page3"
+                  },
+                  {
+                    "translate": "book.aerospace.manual.page4"
+                  }
+                ],
+                "resolved": true
+              },
+              "minecraft:custom_data": {
+                "aerospace_item": "manual"
+              }
+            }
+          }
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "minecraft:aerospace/welcome"
+}
