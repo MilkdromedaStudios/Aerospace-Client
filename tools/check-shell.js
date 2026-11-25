@@ -31,6 +31,7 @@ try {
 }
 
 const failures = [];
+const PASSWORD = "Sp@ce!pw9~`x|{}";
 function check(ok, what, detail) {
   console.log((ok ? "  ok   " : "  FAIL ") + what + (detail ? "  (" + detail + ")" : ""));
   if (!ok) failures.push(what);
@@ -75,7 +76,24 @@ function gl(page) {
     page.on("pageerror", (e) => pageErrors.push(String(e)));
     await page.goto(url + "?fast&nored");
 
+    console.log("pilot profile");
+    await page.waitForSelector("#aero_setup", { state: "visible", timeout: 10000 });
+    await page.waitForTimeout(1200);
+    const held = await page.evaluate(() => window.__mock.phase === "boot" && !window.__log.some((l) => /^BOOTSTAGE/.test(l)) && window.__aerospaceSetupPending === true);
+    check(held, "first start holds the game until the profile is set up");
+    await page.fill("#aero_setup input[name=name]", "bad name!");
+    await page.click("#aero_setup .aero-setup-go");
+    const err = await page.$eval("#aero_setup .aero-setup-error", (n) => n.textContent);
+    check(/3 to 16/.test(err), "invalid usernames are refused", err);
+    await page.fill("#aero_setup input[name=name]", "CheckPilot");
+    await page.fill("#aero_setup input[name=password]", PASSWORD);
+    await page.click("#aero_setup .aero-setup-go");
+
     await page.waitForFunction(() => window.__aerospaceBootDone && window.__mock.phase === "title", null, { timeout: 30000 });
+    const prof = await page.evaluate(() => ({ name: window.__aerospaceProfile.gameName(), u: atob(localStorage.getItem("_eaglercraftX.username") || ""),
+      p: window.__aerospaceProfile.get(), setup: !!document.getElementById("aero_setup") }));
+    check(prof.name === "CheckPilot" && prof.u === "CheckPilot", "username written to the game's profile", prof.name);
+    check(prof.p.password === PASSWORD && prof.p.autoLogin && !prof.setup, "password saved and the game started", JSON.stringify({ auto: prof.p.autoLogin }));
     await page.waitForTimeout(800);
 
     console.log("hud");
@@ -137,6 +155,33 @@ function gl(page) {
     await page.evaluate(() => window.__aerospaceClient.open("crash"));
     const tab = await page.$eval(".aero-pane.on", (n) => n.textContent);
     check(/hit an error in this session/.test(tab) && /test failure/.test(tab), "Crash Log tab shows the saved crash");
+    await page.keyboard.press("Escape");
+
+    console.log("auto sign-in");
+    await page.evaluate(() => {
+      const P = window.__aerospaceProfile;
+      P._line("[Render thread/INFO][Minecraft]: Starting integrated minecraft server version 26.3");
+      P._line("[Render thread/INFO][Minecraft]: [System] [CHAT] Please register with /register <password>");
+    });
+    await page.waitForTimeout(800);
+    check((await page.evaluate(() => window.__mock.sent.length)) === 0, "singleplayer worlds are left alone");
+    await page.evaluate(() => {
+      const P = window.__aerospaceProfile;
+      P._line("[Render thread/INFO][Minecraft]: Connecting to play.example.net, 25565");
+      P._line("[Render thread/INFO][Minecraft]: [System] [CHAT] <Bob> how do I register?");
+    });
+    await page.waitForTimeout(800);
+    check((await page.evaluate(() => window.__mock.sent.length)) === 0, "other players' chat is not a sign-in prompt");
+    await page.evaluate(() => window.__aerospaceProfile._line("[Render thread/INFO][Minecraft]: [System] [CHAT] Please register with /register <password> <password>"));
+    await page.waitForFunction(() => window.__mock.sent.length >= 2, null, { timeout: 20000 }).catch(() => null);
+    const sent = await page.evaluate(() => window.__mock.sent);
+    check(sent[0] === "/signup " + PASSWORD + " " + PASSWORD, "server prompt: /signup typed with the exact password", sent[0] && sent[0].split(PASSWORD).join("<pw>"));
+    check(sent[1] === "/login " + PASSWORD, "signup refused: /login typed instead", sent[1] && sent[1].split(PASSWORD).join("<pw>"));
+    const leaked = await page.evaluate((pw) => window.__aerospaceCrashLog.report().indexOf(pw) >= 0, PASSWORD);
+    check(!leaked, "password is blanked out of the crash log");
+    await page.evaluate(() => window.__aerospaceClient.open("profile"));
+    const profTab = await page.$eval(".aero-pane.on", (n) => n.textContent);
+    check(/Flying as CheckPilot/.test(profTab) && /Sign-up command/.test(profTab), "Profile tab shows the profile");
     await page.keyboard.press("Escape");
 
     console.log("fallback without the engine");

@@ -70,6 +70,13 @@ The expansion is the **Aerospace Lua mod**, installed and enabled the first time
 - Aerospace boot screen with a starfield, progress bar and rotating tips, replacing the stock splash and the red loading screen
 - New page title, icon, crash and rotate-device screens
 
+**Pilot profile and auto sign-in** (first start, then command deck → Profile)
+- The first time Aerospace starts, the loading screen asks for a username and an optional server password before the game starts (or **Skip for now**). The username goes into the game's own profile, so it is the name servers see.
+- With a password saved and auto sign-in on, Aerospace watches a server's chat after you join. When the server asks you to register or log in, it opens chat and types `/signup <password> <password>`; if the server does not confirm it, it types `/login <password>` instead. A prompt that only asks to log in goes straight to `/login`.
+- It never types anything in singleplayer, on servers that do not ask, or in reply to other players' messages, and the commands must start with `/`, so the password cannot end up in public chat. Both commands can be changed on the Profile tab (for example to `/register`).
+- Edit the username, password and commands on the Profile tab. A new username applies after a restart.
+- The password is stored in this browser's localStorage without encryption, so use one you do not use anywhere else. It is blanked out of crash reports. On a server without `/signup`, the game's own "Unknown command" reply shows the command, password included, in your chat for a moment before `/login` runs; set the sign-up command to the one your server uses to avoid that.
+
 **Crash log** (command deck → Crash Log)
 - Records what the game prints to the browser console from the moment the page opens, including the game's background workers
 - When the game fails it shows a panel with the cause and **Copy** / **Download** buttons; the last crash report is kept after a reload
@@ -94,7 +101,7 @@ The shader engine replaces the one tiny shader the game uses to put each finishe
 - FPS, CPS, keystrokes, clock, mission timer, memory, frame-time graph, client badge
 - Drag-and-drop layout, HUD scale and opacity, six accent colours
 
-Client mods only read your own keyboard and mouse, and shaders only restyle the finished picture. Nothing reads game memory or changes what is sent to servers.
+Client mods only read your own keyboard and mouse, and shaders only restyle the finished picture. Nothing reads game memory or changes what is sent to servers. The one exception is auto sign-in, which types your sign-up or log-in command into chat when a server asks, exactly as you would.
 
 **Game assets**
 - "AEROSPACE" title logo, subtitle and loading logo

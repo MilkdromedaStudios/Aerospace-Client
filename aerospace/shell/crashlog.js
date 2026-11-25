@@ -55,7 +55,19 @@
 		var s = out.join(" ");
 		return s.length > MAX_TEXT ? s.slice(0, MAX_TEXT) + " …[cut]" : s;
 	}
+	// Secrets (the saved server password) are blanked out of every line.
+	var secrets = [];
+	function scrub(msg) {
+		for (var i = 0; i < secrets.length; ++i) if (msg.indexOf(secrets[i]) >= 0) msg = msg.split(secrets[i]).join("••••••");
+		return msg;
+	}
+	function redact(secret) {
+		if (typeof secret !== "string" || secret.length < 3 || secrets.indexOf(secret) >= 0) return;
+		secrets.push(secret);
+		for (var i = 0; i < entries.length; ++i) entries[i].text = scrub(entries[i].text);
+	}
 	function record(level, msg) {
+		if (secrets.length) msg = scrub(msg);
 		var e = { t: now(), level: level, text: msg };
 		entries.push(e);
 		if (entries.length > MAX_ENTRIES) entries.splice(0, entries.length - MAX_ENTRIES);
@@ -277,6 +289,7 @@
 		fileName: fileName,
 		showPanel: showPanel,
 		onChange: function (fn) { listeners.push(fn); },
+		redact: redact,
 		_stop: function () { clearInterval(watch); }
 	};
 })();

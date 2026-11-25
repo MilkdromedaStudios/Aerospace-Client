@@ -50,6 +50,29 @@ const MOCK_GAME = `
 	window.addEventListener("keydown", function (e) { M.keys.push("down:" + e.code); e.preventDefault(); e.stopPropagation(); });
 	window.addEventListener("keyup", function (e) { M.keys.push("up:" + e.code); });
 	canvas.addEventListener("wheel", function () { M.wheels++; });
+	// A bare-bones chat, enough for the profile's auto sign-in: T opens it and
+	// focuses a text input marked like the game's, keys type, Enter sends.
+	var chatInput = null, typed = "";
+	M.sent = [];
+	canvas.addEventListener("keydown", function (e) {
+		if (!chatInput) {
+			if (e.key !== "t" || M.phase !== "title") return;
+			chatInput = document.createElement("input");
+			chatInput.setAttribute("data-eagler-text-input", "true");
+			chatInput.style.cssText = "position:fixed;left:-200px;top:0;width:10px;opacity:0";
+			document.body.appendChild(chatInput);
+			chatInput.focus();
+			typed = "";
+			return;
+		}
+		if (e.key === "Enter") {
+			M.sent.push(typed);
+			chatInput.remove(); chatInput = null;
+			console.log("[Render thread/INFO][Minecraft]: [System] [CHAT] Unknown or incomplete command. See below for error");
+			return;
+		}
+		if (e.key.length === 1) typed += e.key;
+	});
 	canvas.addEventListener("mousedown", function () { M.clicks++; if (M.phase === "title") canvas.requestPointerLock(); });
 
 	// ---- the game's offscreen colour target ------------------------------------
@@ -171,7 +194,8 @@ const MOCK_GAME = `
 		window.__eaglerGameReady = true;
 		if (!noRed) setTimeout(function () { M.phase = "title"; }, fast ? 700 : 2600);
 	}
-	setTimeout(next, fast ? 200 : 1500);
+	// the first start waits for the pilot profile, like the real game (launch gate)
+	(window.__aerospaceLaunchGate || Promise.resolve()).then(function () { setTimeout(next, fast ? 200 : 1500); });
 	function loop(t) {
 		var w = frame.clientWidth, h = frame.clientHeight;
 		if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
@@ -191,6 +215,8 @@ const html = `<!DOCTYPE html>
 <meta charset="UTF-8" />
 <script type="text/javascript" id="aerospace-crashlog">
 ${template("crashlog.js")}</script>
+<script type="text/javascript" id="aerospace-profile">
+${template("profile.js")}</script>
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Aerospace Client shell preview</title>

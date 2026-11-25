@@ -20,6 +20,7 @@
 
 	var TIPS = [
 		"Tap Right Shift at any time to open the Aerospace command deck.",
+		"Save a server password under Right Shift → Profile and Aerospace signs you in when a server asks.",
 		"Hold C in a world to zoom. Scroll while zooming to change magnification.",
 		"Pick a look under Shaders in the command deck: Cinematic, Nebula, Retro CRT and more.",
 		"Brightness under Shaders lifts dark caves without washing out the sky.",
@@ -98,6 +99,10 @@
 		if (sawBootSignal) { clearInterval(creep); return; }
 		var elapsed = (Date.now() - startedAt) / 1000;
 		setProgress(26 * (1 - Math.exp(-elapsed / 9)));
+		if (window.__aerospaceSetupPending) {
+			if (elapsed > 2 && elapsed < 2.3) setStatus("Warming up the engines while you set up your profile…");
+			return;
+		}
 		if (elapsed > 2 && elapsed < 2.3) setStatus("Unpacking flight computer…");
 		if (elapsed > 9 && elapsed < 9.3) setStatus("Compiling engines (first launch takes longest)…");
 	}, 250);
@@ -194,6 +199,7 @@
 		if (dismissed) return;
 		if (document.querySelector("._eaglercraftX_crash_element") || window.__err) { dismiss(true); return; }
 		if (window.__eaglerGameReady === true) { holdForTitle(); return; }
+		if (window.__aerospaceSetupPending) pollStarted = Date.now();   // the game waits for the pilot profile
 		if (Date.now() - pollStarted > 300000) { dismiss(true); return; }
 		setTimeout(poll, 120);
 	})();

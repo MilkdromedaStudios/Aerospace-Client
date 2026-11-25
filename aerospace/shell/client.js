@@ -518,7 +518,14 @@
 	}
 	function swallow(e) { e.stopImmediatePropagation(); }
 
+	// Text fields in the deck keep every key except Escape (capitals typed with
+	// Right Shift must not close the deck).
+	function inTextField(e) {
+		var t = e.target;
+		return !!(t && (t.tagName === "TEXTAREA" || (t.tagName === "INPUT" && !/^(range|checkbox|button|radio)$/.test(t.type))));
+	}
 	function onKeyDown(e) {
+		if (window.__aerospaceAutoTyping) return;   // the profile's auto sign-in is typing into chat
 		if (listeningFor) {
 			swallow(e); e.preventDefault();
 			if (e.code !== "Escape") { cfg[listeningFor.setting] = e.code; save(); }
@@ -528,7 +535,7 @@
 		}
 		if (deckOpen || editing) {
 			swallow(e);                       // the game must not see typing meant for the deck
-			if (e.code === "Escape" || (e.code === cfg.menuKey && !e.repeat)) {
+			if (e.code === "Escape" || (e.code === cfg.menuKey && !e.repeat && !inTextField(e))) {
 				e.preventDefault();
 				if (editing) { setEditing(false); openDeck("hud"); } else closeDeck();
 			}
@@ -544,6 +551,7 @@
 		setKeyVisual(e.code, true);
 	}
 	function onKeyUp(e) {
+		if (window.__aerospaceAutoTyping) return;
 		// Key releases always reach the game, even while the deck is open, so a key
 		// that was held when the deck opened can never get stuck down.
 		if (deckOpen || editing) return;
@@ -845,6 +853,76 @@
 		]);
 	}
 
+	function buildProfilePane() {
+		var api = window.__aerospaceProfile;
+		if (!api) return el("div", { class: "aero-pane" }, [el("div", { class: "aero-info", text: "The pilot profile is not running." })]);
+		var p = api.get();
+		var startName = api.gameName();
+		function input(value, attrs) {
+			var i = el("input", { class: "aero-input", value: value, spellcheck: "false", autocapitalize: "off", autocomplete: "off" });
+			for (var k in attrs) i.setAttribute(k, attrs[k]);
+			i.value = value;
+			return i;
+		}
+		var nameIn = input(api.isDefaultName(startName) ? "" : startName, { maxlength: "16", placeholder: startName || "3 to 16 letters, numbers or _" });
+		var pwIn = input(p.password, { type: "password", maxlength: "64", placeholder: "No spaces" });
+		var autoIn = el("input", { type: "checkbox" });
+		autoIn.checked = p.autoLogin;
+		var signupIn = input(p.signup, { class: "aero-input is-wide" });
+		var loginIn = input(p.login, { class: "aero-input is-wide" });
+		var status = el("div", { class: "aero-info" });
+		var restart = button("Restart now", function () {
+			if (window.confirm("Restart Aerospace Client now? If you are in a world, choose Save and Quit first so nothing is lost.")) location.reload();
+		});
+		restart.hidden = true;
+		function note(html, warn) { status.innerHTML = html; status.style.borderColor = warn ? "rgba(255,111,111,.55)" : ""; }
+		function intro() {
+			var cur = api.gameName();
+			note("<strong>Flying as " + esc(cur || "(no name yet)") + ".</strong> "
+				+ (api.get().autoLogin && api.get().password
+					? "When a server asks you to register or log in, Aerospace opens chat and types the sign-up command; if the server does not accept it, it types the log-in command instead."
+					: "Save a password and turn on auto sign-in to have Aerospace register and log you in on servers that ask."));
+		}
+		intro();
+		function saveAll() {
+			var name = nameIn.value.trim(), pw = pwIn.value;
+			if (name && !api.NAME_RE.test(name)) { note("Usernames are 3 to 16 letters, numbers or _ (no spaces).", true); nameIn.focus(); return; }
+			if (pw && !api.PASSWORD_RE.test(pw)) { note("Passwords are 4 to 64 characters, without spaces.", true); pwIn.focus(); return; }
+			var su = signupIn.value.trim() || api.DEFAULTS.signup, li = loginIn.value.trim() || api.DEFAULTS.login;
+			if (!api.isCommand(su) || !api.isCommand(li)) { note("Sign-in commands must start with / so your password never goes into public chat.", true); return; }
+			if (su.indexOf("{password}") < 0 || li.indexOf("{password}") < 0) { note("Put {password} where the password goes in both commands.", true); return; }
+			var renamed = false;
+			if (name && name !== api.gameName()) {
+				try { api.setGameName(name); renamed = true; } catch (x) { note("Could not save the username: " + esc(x.message), true); return; }
+			}
+			api.set({ password: pw, autoLogin: autoIn.checked && !!pw, signup: su, login: li, created: api.get().created || Date.now(), skipped: false });
+			autoIn.checked = api.get().autoLogin;
+			signupIn.value = su; loginIn.value = li;
+			intro();
+			if (renamed) {
+				restart.hidden = false;
+				note("<strong>Saved.</strong> The game uses the new name, <b>" + esc(name) + "</b>, after a restart. Restart now, or keep playing and it applies next time.");
+			} else toast("Profile saved.");
+		}
+		var showBtn = button("Show", function () {
+			var show = pwIn.type === "password";
+			pwIn.type = show ? "text" : "password";
+			showBtn.textContent = show ? "Hide" : "Show";
+		});
+		return el("div", { class: "aero-pane" }, [
+			status,
+			row("Username", "What servers and other players see. 3 to 16 letters, numbers or _. Applies after a restart.", [nameIn]),
+			row("Server password", "Saved in this browser only, without encryption. Use one you do not use anywhere else.", [pwIn, showBtn]),
+			row("Auto sign-in", "Sign up or log in automatically when a server asks.", [autoIn]),
+			el("h3", { class: "aero-section", text: "Commands" }),
+			row("Sign-up command", "Typed first. {password} is replaced by your password.", [signupIn]),
+			row("Log-in command", "Typed when the sign-up command does not work.", [loginIn]),
+			row("", "", [button("Save profile", saveAll), restart,
+				button("Forget password", function () { pwIn.value = ""; autoIn.checked = false; api.set({ password: "", autoLogin: false }); intro(); toast("Password removed from this browser."); }),
+				button("Defaults", function () { signupIn.value = api.DEFAULTS.signup; loginIn.value = api.DEFAULTS.login; })])
+		]);
+	}
+
 	function buildAboutPane() {
 		return el("div", { class: "aero-pane" }, [el("div", { class: "aero-about", html:
 			"<h2>Aerospace Client " + VERSION + "</h2>"
@@ -854,7 +932,8 @@
 			+ "<li>Hold " + kbd(cfg.zoomKey) + ": optical zoom, scroll to adjust</li>"
 			+ "<li>" + kbd(cfg.shotKey) + ": screenshot to " + (cfg.shotMode === "file" ? "a file" : "the clipboard") + "</li></ul>"
 			+ "<h2>Fair play</h2><p>Client mods only read your own keyboard and mouse, and shaders only restyle the finished picture. "
-			+ "Nothing reads game memory or changes what is sent to servers.</p>"
+			+ "Nothing reads game memory or changes what is sent to servers. The one exception is auto sign-in (Profile tab), which types "
+			+ "your sign-up or log-in command into chat when a server asks, exactly as you would.</p>"
 			+ "<h2>Credits</h2><ul>"
 			+ "<li>Minecraft is © Mojang AB. Aerospace Client is an unofficial fan project and is not affiliated with or endorsed by Mojang or Microsoft.</li>"
 			+ "<li>Browser port: the Eaglercraft project (lax1dude, ayunami2000 and the 26.x port contributors).</li>"
@@ -882,6 +961,7 @@
 		addTab("shaders", "Shaders", buildShadersPane());
 		addTab("hud", "HUD", buildHudPane());
 		addTab("settings", "Settings", buildSettingsPane());
+		addTab("profile", "Profile", buildProfilePane());
 		addTab("crash", "Crash Log", buildCrashPane());
 		addTab("about", "About", buildAboutPane());
 
