@@ -2,12 +2,13 @@
  * Aerospace Client — bundled mod installer.
  *
  * Installs the mods that ship with the client (Aerospace, Sodium, Lithium) into
- * the game's own mod store, enabled, before the game starts. The store is the
+ * the game's own mod store before the game starts. Aerospace (rockets) is
+ * enabled by default; Sodium and Lithium are installed but disabled. The store is the
  * game's IndexedDB filesystem: zeus/mods.json lists installed mods and
  * zeus/mods/<id>.zip holds each one, exactly as the Mods screen writes them.
  *
  * It respects the player: a bundled mod is installed once and updated when a
- * newer version ships, but if the player disabled it, it stays disabled, and
+ * newer version ships, but subsequent player enable/disable choices are kept, and
  * if they deleted it, it is not put back. A mod with the same id that the
  * player installed themselves is left alone.
  *
@@ -20,6 +21,8 @@
 	var MODS = {{BUNDLED_MODS}};
 	var DB_NAME = "_net_lax1dude_eaglercraft_v1_8_internal_PlatformFilesystem_1_8_8_worlds";
 	var STATE_KEY = "Aerospace:bundledMods";
+	var DEFAULTS_MIGRATION = "Aerospace:optionalModsDisabledV1";
+	function defaultEnabled(id) { return id === "aerospace"; }
 	var log = [];
 
 	function bytes(b64) {
@@ -52,6 +55,8 @@
 				var tx = db.transaction("filesystem", "readwrite");
 				var store = tx.objectStore("filesystem");
 				var state = loadState();
+				var migrateDefaults = false;
+				try { migrateDefaults = localStorage.getItem(DEFAULTS_MIGRATION) !== "1"; } catch (e) {}
 				var put = function (path, data) { store.put({ path: path, data: data }); };
 				var getReq = store.get(["zeus/mods.json"]);
 				getReq.onsuccess = function () {
@@ -66,14 +71,23 @@
 						if (!mine) {
 							if (entry) { state[m.id] = { version: null, owner: "player" }; log.push(m.id + ": player's own copy kept"); return; }
 							put("zeus/mods/" + m.id + ".zip", bytes(m.zip));
-							list.mods.push({ enabled: true, id: m.id });
+							list.mods.push({ enabled: defaultEnabled(m.id), id: m.id });
 							changed = true;
 							state[m.id] = { version: m.version, owner: "aerospace" };
-							log.push(m.id + " " + m.version + ": installed");
-						} else if (mine.owner === "aerospace" && entry && mine.version !== m.version) {
+							log.push(m.id + " " + m.version + ": installed " + (defaultEnabled(m.id) ? "enabled" : "disabled"));
+						} else if (mine.owner === "aerospace" && entry) {
+							// One-time migration for existing installs: disable optional bundled
+							// performance mods. Later player choices remain untouched.
+							if (migrateDefaults && !defaultEnabled(m.id) && entry.enabled) {
+								entry.enabled = false;
+								changed = true;
+								log.push(m.id + ": disabled by new defaults");
+							}
+							if (mine.version !== m.version) {
 							put("zeus/mods/" + m.id + ".zip", bytes(m.zip));
 							state[m.id].version = m.version;
 							log.push(m.id + ": updated to " + m.version + (entry.enabled ? "" : " (still disabled)"));
+							}
 						} else if (mine.owner === "aerospace" && !entry) {
 							log.push(m.id + ": removed by the player, not reinstalled");
 						}
@@ -85,7 +99,11 @@
 						put("zeus/mods.json", encode(JSON.stringify(list, null, 2)));
 					}
 				};
-				tx.oncomplete = function () { db.close(); saveState(state); resolve(log.join("; ") || "up to date"); };
+				tx.oncomplete = function () {
+					db.close(); saveState(state);
+					try { localStorage.setItem(DEFAULTS_MIGRATION, "1"); } catch (e) {}
+					resolve(log.join("; ") || "up to date");
+				};
 				tx.onerror = tx.onabort = function () { db.close(); resolve("write failed: " + (tx.error && tx.error.message)); };
 			};
 		});
